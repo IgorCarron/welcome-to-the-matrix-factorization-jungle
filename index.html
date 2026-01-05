@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Advanced Matrix Factorization Jungle</title>
+    <link rel="icon" type="image/jpeg" href="junglegreen.jpg">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: linear-gradient(180deg, #f0f7e6 0%, #e8f4d9 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1b4d1b 0%, #2d5a2d 40%, #3d7a3d 70%, #4a8a4a 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-bottom: 6px solid #0d260d;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+        }
+
+        header .subtitle {
+            font-size: 1.15rem;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-text {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-left: 6px solid #2d5a2d;
+        }
+
+        .hero-text h2 {
+            color: #1b4d1b;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-visual {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-visual img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .hero-visual .caption {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #555;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .notation {
+            background: linear-gradient(135deg, #fffde7 0%, #fff9c4 100%);
+            border: 2px solid #f9a825;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .schools {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .school {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .school-header {
+            padding: 1rem 1.5rem;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .school.decomp .school-header { background: linear-gradient(90deg, #1565c0, #1976d2); }
+        .school.factor .school-header { background: linear-gradient(90deg, #e65100, #f57c00); }
+
+        .school-body { padding: 1.5rem; }
+
+        .school-diagram {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .category {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .cat-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .cat-header h2 {
+            font-size: 1.4rem;
+            flex-grow: 1;
+        }
+
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            background: rgba(0,0,0,0.05);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+        }
+
+        .phase-badge {
+            background: #00897b;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 15px;
+            font-family: sans-serif;
+        }
+
+        .cat-body {
+            padding: 1.5rem;
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .cat-body.with-figure {
+            grid-template-columns: 2fr 1fr;
+        }
+
+        .cat-figure {
+            text-align: center;
+        }
+
+        .cat-figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .cat-figure .fig-caption {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .cat-blue .cat-header { background: #e3f2fd; }
+        .cat-blue h2 { color: #1565c0; }
+        .cat-purple .cat-header { background: #f3e5f5; }
+        .cat-purple h2 { color: #7b1fa2; }
+        .cat-orange .cat-header { background: #fff3e0; }
+        .cat-orange h2 { color: #e65100; }
+        .cat-green .cat-header { background: #e8f5e9; }
+        .cat-green h2 { color: #2e7d32; }
+        .cat-red .cat-header { background: #ffebee; }
+        .cat-red h2 { color: #c62828; }
+        .cat-teal .cat-header { background: #e0f2f1; }
+        .cat-teal h2 { color: #00695c; }
+        .cat-pink .cat-header { background: #fce4ec; }
+        .cat-pink h2 { color: #c2185b; }
+        .cat-indigo .cat-header { background: #e8eaf6; }
+        .cat-indigo h2 { color: #303f9f; }
+
+        .description {
+            color: #555;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .impl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .impl {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 0.5rem 0.7rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.3rem;
+        }
+
+        .impl-name { font-weight: bold; color: #333; }
+        .impl-info { color: #666; font-size: 0.9rem; }
+
+        .impl a { text-decoration: none; }
+        .impl a:hover .impl-name { color: #1565c0; text-decoration: underline; }
+
+        .tag {
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-family: sans-serif;
+            margin-left: auto;
+        }
+
+        .tag.py { background: #3776ab; color: white; }
+        .tag.mat { background: #e16737; color: white; }
+        .tag.r { background: #276dc3; color: white; }
+        .tag.cpp { background: #00599c; color: white; }
+
+        .books-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .books-section h2 {
+            color: #1b4d1b;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .book { text-align: center; }
+
+        .book img {
+            height: 120px;
+            width: auto;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+
+        .book .book-title {
+            font-size: 0.75rem;
+            color: #555;
+            margin-top: 0.5rem;
+            max-width: 110px;
+        }
+
+        .phase-showcase {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .phase-showcase h2 {
+            color: #c62828;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .phase-showcase .intro {
+            text-align: center;
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .phase-item { text-align: center; }
+
+        .phase-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .phase-item .phase-caption {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .contributors {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .contributors h2 {
+            color: #303f9f;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background: #1b4d1b;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        footer a { color: #a5d6a7; }
+
+        @media (max-width: 900px) {
+            .hero, .schools { grid-template-columns: 1fr; }
+            .cat-body.with-figure { grid-template-columns: 1fr; }
+            header h1 { font-size: 2rem; }
+        }
+    </style>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+    <header>
+        <h1>The Advanced Matrix Factorization Jungle</h1>
+        <p class="subtitle">A living document on state-of-the-art algorithms, implementations, and phase transitions</p>
+    </header>
+
+    <main>
+        <div class="hero">
+            <div class="hero-text">
+                <h2>Welcome to the Jungle</h2>
+                <p style="margin-bottom:1rem">This Matrix Factorization Jungle page ventures beyond classical decompositions into factorizations that impose <em>structural assumptions on the unknowns</em>&mdash;sparsity, low-rank, non-negativity, subspace membership, and more. As sparse recovery solvers matured, a rich ecosystem emerged. NMF was the first of such decomposition and the discovery of <strong>compressive sensing</strong> and that <strong>nuclear norms can serve as convex proxies for rank</strong> opened the floodgates to powerful new decomposition techniques.</p>
+                <p>What distinguishes these methods is that they come with <strong>phase transitions</strong>&mdash;sharp boundaries in parameter space where algorithms succeed or fail. This document maps that landscape, from video surveillance to recommendation systems, blending randomized linear algebra, nonconvex optimization, and probabilistic modeling.</p>
+                <p style="margin-top:1rem"><strong>Traditional Matrix Decompositions:</strong> There is a stellar and comprehensive treatment of classical matrix factorization techniques&mdash;LU, Cholesky, QR, SVD, Polar, Eigendecomposition, Jordan, Schur, CUR/Skeleton, Hessenberg, Tridiagonal, and Bidiagonal decompositions&mdash;in Jun Lu's monographs: <a href="https://arxiv.org/abs/2201.00145" target="_blank" style="color:#1565c0">"Matrix Decomposition and Applications"</a> and <a href="https://arxiv.org/abs/2107.02579" target="_blank" style="color:#1565c0">"Numerical Matrix Decomposition and its Modern Applications"</a>. Most of the traditional techniques used to not put constraints on the matrix/data to be factorized.</p>
+                <div class="notation">
+                    <strong>Notation:</strong> <b>A</b> = observed &nbsp;|&nbsp; <b>L</b> = low-rank &nbsp;|&nbsp; <b>S</b> = sparse &nbsp;|&nbsp; <b>N</b> = noise &nbsp;|&nbsp; <b>D</b> = dictionary &nbsp;|&nbsp; <b>X</b> = coefficients
+                </div>
+            </div>
+            <div class="hero-visual">
+                <img src="junglegreen.jpg" alt="Matrix Factorization Jungle" style="margin-bottom: 1rem;">
+                <img src="4be46a769226ae46b0afb46b915e46c3a31013e2.JPG" alt="Evolution of Phase Transitions">
+                <p class="caption">"The Sparsest of Them All" &mdash; Evolution of phase transitions from Gauss to <a href="https://arxiv.org/abs/1109.4424" target="_blank" style="color:#1565c0">Krzakala, Mézard, Sausset, Sun, Zdeborová</a></p>
+            </div>
+        </div>
+        <p style="text-align: center; margin-bottom: 1.5rem; font-style: italic; color: #555;">This page was first announced on <a href="https://nuit-blanche.blogspot.com/2011/08/current-jungle-in-matrix-factorization.html" target="_blank" style="color:#1565c0">Nuit Blanche</a> in August 2011.</p>
+
+        <!-- Navigation Table -->
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-x: auto;">
+            <h3 style="color: #1b4d1b; margin-bottom: 1rem; text-align: center;">Quick Reference for Advanced Matrix Factorization: Structural Assumptions &amp; Unknowns</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="background: linear-gradient(90deg, #e65100, #f57c00); color: white;">
+                        <th style="padding: 0.7rem; text-align: left; border: 1px solid #ddd;" colspan="7">FACTORIZATIONS (A = DX, UV<sup>T</sup>)</th>
+                    </tr>
+                    <tr style="background: #fff3e0;">
+                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #ddd; width: 13%;">Problem</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 11%;">Form</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 13%;">Loss D(A;DX)</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 10%;">Known</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 13%;">Unknown</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 28%;">Key Constraints</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 12%;">Phase Trans.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><span style="color: #1565c0; font-weight: bold;">SVD</span></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D<sup>T</sup>D = I, XX<sup>T</sup> = &Lambda; (diagonal)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><span style="color: #6a1b9a; font-weight: bold;">pLSI</span></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">KL(A;DX)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">1<sup>T</sup>D1 = 1, d<sub>ij</sub> &ge; 0, 1<sup>T</sup>X = 1, x<sub>ij</sub> &ge; 0</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#nmf" style="color: #e65100; font-weight: bold;">NMF</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>F</sub><sup>2</sup><br>KL(A;DX)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D &ge; 0, X &ge; 0</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#dictionary-learning" style="color: #00695c; font-weight: bold;">Dictionary Learning</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">||d<sub>j</sub>||<sub>2</sub> = 1, X sparse</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#sparse-pca" style="color: #c2185b; font-weight: bold;">Sparse PCA</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">||d||<sub>2</sub> = 1, D sparse</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#kmeans" style="color: #7b1fa2; font-weight: bold;">K-Means</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">XX<sup>T</sup> = I, X<sub>ij</sub> &isin; {0,1}</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#kmeans" style="color: #7b1fa2; font-weight: bold;">K-Medians</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>1</sub></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">XX<sup>T</sup> = I, X<sub>ij</sub> &isin; {0,1}</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#subspace-clustering" style="color: #7b1fa2; font-weight: bold;">Subspace Clustering</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = AX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-AX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">diag(X) = 0, sparse/low-rank</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#mmv" style="color: #c2185b; font-weight: bold;">MMV / Comp. Sensing</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">Y = AX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||Y-AX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Y, A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X joint row-sparse</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#bss-ica" style="color: #303f9f; font-weight: bold;">BSS / ICA</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">Y = AX</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||Y-AX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Y</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A, X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">rows of X independent</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#recommender" style="color: #7b1fa2; font-weight: bold;">Recommender Systems</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">R = UV<sup>T</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||R-UV<sup>T</sup>||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">R<sub>&Omega;</sub></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">U, V</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">low-rank</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#lora" style="color: #ff5722; font-weight: bold;">LoRA</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">W' = W + BA</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">L(W+BA)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">W</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">B, A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">B&isin;R<sup>d&times;r</sup>, A&isin;R<sup>r&times;k</sup>, r &ll; d,k</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#autoencoders" style="color: #9c27b0; font-weight: bold;">Autoencoders</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">X = D(E(X))</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||X-D(E(X))||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">E, D</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">bottleneck dim k; linear &rarr; PCA</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#nonconvex" style="color: #00695c; font-weight: bold;">Non-Convex Opt.</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">M = UV<sup>T</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||M-UV<sup>T</sup>||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">M</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">U, V</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">rank(UV<sup>T</sup>) &le; r</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#tensor" style="color: #2e7d32; font-weight: bold;">Tensor Decomp.</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">T = &sum; a&otimes;b&otimes;c</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||T-&sum;a&otimes;b&otimes;c||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">T</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">factors</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">CP/Tucker/TT structure</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#graph-matching" style="color: #795548; font-weight: bold;">Graph Matching</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = XBX<sup>T</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-XBX<sup>T</sup>||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X, B</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X permutation matrix</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#gen-mf" style="color: #607d8b; font-weight: bold;">Generalized MF</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">W&odot;L = W&odot;UV<sup>T</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||W&odot;(L-UV<sup>T</sup>)||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">W (mask)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">U, V, L</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L lowest rank</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#archetypal" style="color: #ff9800; font-weight: bold;">Archetypal Analysis</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = DX, D = AB</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A-DX||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">D, X, B</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X, B &ge; 0, convex hull</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#mcs" style="color: #9c27b0; font-weight: bold;">Matrix Comp. Sensing</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A(L) = b</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||A(L)-b||<sub>2</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A, b</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L rank-r</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#kernel" style="color: #4caf50; font-weight: bold;">Kernel Factorizations</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">K = &Phi;&Phi;<sup>T</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||K-&Phi;&Phi;<sup>T</sup>||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">K (kernel)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">&Phi; (features)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">K &ge; 0, PSD</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 1rem;">
+                <thead>
+                    <tr style="background: linear-gradient(90deg, #1565c0, #1976d2); color: white;">
+                        <th style="padding: 0.7rem; text-align: left; border: 1px solid #ddd;" colspan="7">DECOMPOSITIONS (A = L + S)</th>
+                    </tr>
+                    <tr style="background: #e3f2fd;">
+                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #ddd; width: 13%;">Problem</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 13%;">Form</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 13%;">Loss D(A;L,S)</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 10%;">Known</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 13%;">Unknown</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 26%;">Key Constraints</th>
+                        <th style="padding: 0.5rem; text-align: center; border: 1px solid #ddd; width: 12%;">Phase Trans.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#rpca" style="color: #c62828; font-weight: bold;">Robust PCA</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = L + S</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||L||<sub>*</sub>+&lambda;||S||<sub>1</sub></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L, S</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L low-rank, S sparse</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#matrix-completion" style="color: #2e7d32; font-weight: bold;">Matrix Completion</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">P<sub>&Omega;</sub>(M) = P<sub>&Omega;</sub>(L)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||L||<sub>*</sub></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">M<sub>&Omega;</sub></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L low-rank, incoherent</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#spcp" style="color: #e91e63; font-weight: bold;">SPCP / Noisy RPCA</a></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A = L + S + N</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif;">||L||<sub>*</sub>+&lambda;||S||<sub>1</sub><br>+||N||<sub>F</sub><sup>2</sup></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">A</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L, S, N</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">L low-rank, S sparse, N noise</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;"><span style="background: #00897b; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Yes</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <h3 style="color: #1b4d1b; margin-bottom: 1rem; text-align: center;">Jun Lu's Taxonomy of Classical Matrix Decompositions</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div style="text-align: center;">
+                    <img src="jun-lu-figure1.png" alt="Matrix Decomposition World Map" style="max-width: 30%; border-radius: 8px; border: 1px solid #ddd;">
+                    <p style="margin-top: 0.5rem; font-style: italic; color: #555; font-size: 0.85rem;">Figure 1: Matrix Decomposition World Map &mdash; relationships between classical decompositions</p>
+                </div>
+                <div style="text-align: center;">
+                    <img src="jun-lu-figure2.png" alt="Matrix Decomposition World Map Under Conditions" style="max-width: 30%; border-radius: 8px; border: 1px solid #ddd;">
+                    <p style="margin-top: 0.5rem; font-style: italic; color: #555; font-size: 0.85rem;">Figure 2: Matrix Decomposition World Map Under Conditions &mdash; taxonomy by matrix structure</p>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; text-align: center; font-size: 0.9rem; color: #666;">From <a href="https://arxiv.org/abs/2201.00145" target="_blank" style="color:#1565c0">Jun Lu, "Matrix Decomposition and Applications" (arXiv:2201.00145)</a></p>
+        </div>
+
+        <div class="schools">
+            <div class="school decomp">
+                <div class="school-header">Decomposition (L + S)</div>
+                <div class="school-body">
+                    <div class="school-diagram">
+                        <svg width="300" height="80" viewBox="0 0 300 80">
+                            <rect x="5" y="15" width="50" height="50" fill="#1976d2" rx="4"/>
+                            <text x="30" y="45" text-anchor="middle" fill="white" font-size="18" font-weight="bold">A</text>
+                            <text x="70" y="45" fill="#333" font-size="20">=</text>
+                            <rect x="90" y="15" width="50" height="50" fill="#4caf50" rx="4"/>
+                            <text x="115" y="45" text-anchor="middle" fill="white" font-size="18" font-weight="bold">L</text>
+                            <text x="155" y="45" fill="#333" font-size="20">+</text>
+                            <rect x="175" y="15" width="50" height="50" fill="none" stroke="#ff9800" stroke-width="3" rx="4"/>
+                            <circle cx="190" cy="30" r="4" fill="#ff9800"/>
+                            <circle cx="210" cy="45" r="4" fill="#ff9800"/>
+                            <circle cx="195" cy="55" r="4" fill="#ff9800"/>
+                            <text x="240" y="45" fill="#333" font-size="20">+</text>
+                            <rect x="255" y="20" width="30" height="40" fill="#9e9e9e" opacity="0.5" rx="2"/>
+                            <text x="270" y="45" text-anchor="middle" fill="#555" font-size="14">N</text>
+                        </svg>
+                    </div>
+                    <p><em>Applications: Video surveillance, face recognition, Netflix recommendations</em></p>
+                </div>
+            </div>
+            <div class="school factor">
+                <div class="school-header">Factorization (UV<sup>T</sup>)</div>
+                <div class="school-body">
+                    <div class="school-diagram">
+                        <svg width="280" height="80" viewBox="0 0 280 80">
+                            <rect x="5" y="10" width="50" height="60" fill="#f57c00" rx="4"/>
+                            <text x="30" y="45" text-anchor="middle" fill="white" font-size="18" font-weight="bold">M</text>
+                            <text x="70" y="45" fill="#333" font-size="20">=</text>
+                            <rect x="90" y="10" width="25" height="60" fill="#e91e63" rx="4"/>
+                            <text x="102" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="bold">D</text>
+                            <rect x="125" y="20" width="70" height="25" fill="#9c27b0" rx="4"/>
+                            <text x="160" y="38" text-anchor="middle" fill="white" font-size="14" font-weight="bold">X</text>
+                        </svg>
+                    </div>
+                    <p><em>Applications: Image denoising, compression, feature learning</em></p>
+                </div>
+            </div>
+        </div>
+
+        <section id="kmeans" class="category cat-purple">
+            <div class="cat-header">
+                <h2>Spectral Clustering & K-Means</h2>
+                <span class="formula">$\underbrace{A}_{\text{known}} = \underbrace{D}_{\text{unknown}} \underbrace{X}_{\text{unknown}}$ s.t. $XX^T = I$, $X_{ij} \in \{0,1\}$</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body with-figure">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data A, find unknown centroids D and assignment matrix X. The constraint XX<sup>T</sup> = I enforces that each data point belongs to exactly one cluster, while X<sub>ij</sub> &isin; {0,1} makes assignments binary. K-Median uses L<sub>1</sub> loss instead of L<sub>2</sub>. Spectral methods relax the binary constraint and partition via graph Laplacian eigenvectors.</p>
+                    <p><strong>Operators:</strong> Random walk, Adjacency, Laplacian, Modularity, Non-Backtracking</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://theory.stanford.edu/~sergei/papers/kMeansPP-soda.pdf" target="_blank"><span class="impl-name">K-Means++</span></a> <span class="impl-info">Arthur, Vassilvitskii &mdash; improved seeding</span></div>
+                        <div class="impl"><a href="https://papers.nips.cc/paper/2092-on-spectral-clustering-analysis-and-an-algorithm" target="_blank"><span class="impl-name">Spectral Clustering</span></a> <span class="impl-info">Ng, Jordan, Weiss</span> <span class="tag py">Python</span></div>
+                    </div>
+                </div>
+                <div class="cat-figure">
+                    <img src="51a584a8a9383240d5de8b1e2e61208464ca33f7.jpg" alt="K-means/K-median phase transitions">
+                    <p class="fig-caption">K-means/K-median: Empirical probability of integrality for SDP/LP relaxations. Figure from: <a href="https://arxiv.org/abs/1408.4675" target="_blank" style="color:#1565c0">Awasthi, Bandeira, Charikar, Krishnaswamy, Villar, Ward &mdash; "Relax, no need to round: integrality of clustering formulations" (2015)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="subspace-clustering" class="category cat-purple">
+            <div class="cat-header">
+                <h2>Subspace Clustering</h2>
+                <span class="formula">$\underbrace{A}_{\text{known}} = \underbrace{A}_{\text{known}} \underbrace{X}_{\text{unknown}}$ s.t. $\text{diag}(X) = 0$, $X$ is sparse and/or low-rank</span>
+            </div>
+            <div class="cat-body with-figure">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data matrix A, find unknown coefficient matrix X where each column x<sub>i</sub> expresses data point a<sub>i</sub> as linear combination of other points. Constraint diag(X) = 0 prevents trivial self-representation. Additional regularization: ||X||<sub>1</sub> (SSC), ||X||<sub>*</sub> (LRR), or ||X||<sub>F</sub> (LSR).</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1203.1005" target="_blank"><span class="impl-name">SSC</span></a> <span class="impl-info">Elhamifar, Vidal</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1010.2955" target="_blank"><span class="impl-name">LRR</span></a> <span class="impl-info">Liu et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1203.1005" target="_blank"><span class="impl-name">LSR</span></a> <span class="impl-info">Canyi Lu</span></div>
+                        <div class="impl"><a href="https://papers.nips.cc/paper/2011/hash/fc490ca45c00b1249bbe3554a4fdf6fb-Abstract.html" target="_blank"><span class="impl-name">SMCE</span></a> <span class="impl-info">Sparse Manifold</span></div>
+                        <div class="impl"><a href="https://www.science.org/doi/10.1126/science.290.5500.2323" target="_blank"><span class="impl-name">LLE</span></a> <span class="impl-info">Local Linear Embedding</span></div>
+                    </div>
+                </div>
+                <div class="cat-figure">
+                    <img src="20cabf3059fc637f139a40d1e582b74b4ad4b6d8.jpg" alt="Subspace criteria">
+                    <p class="fig-caption">Subspace clustering criteria satisfying EBD conditions. Figure from: <a href="https://arxiv.org/abs/1203.1005" target="_blank" style="color:#1565c0">Elhamifar, Vidal &mdash; "Sparse Subspace Clustering: Algorithm, Theory, and Applications" (2013)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="nmf" class="category cat-orange">
+            <div class="cat-header">
+                <h2>Non-Negative Matrix Factorization (NMF)</h2>
+                <span class="formula">$\min_{D,X} \|\underbrace{A}_{\text{known}} - \underbrace{D}_{\text{unknown}} \underbrace{X}_{\text{unknown}}\|_F^2$ s.t. $D \in \mathbb{R}^{m \times r}_+$, $X \in \mathbb{R}^{r \times n}_+$, $D, X \geq 0$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given non-negative data matrix A, find unknown dictionary D and coefficients X, both constrained to be element-wise non-negative. The rank r controls the number of parts/topics. Non-negativity yields interpretable, parts-based representations.</p>
+                    <p style="margin-bottom:1rem"><strong>Deep NMF (2018+):</strong> Multiple layers of factorization discover hierarchical structure. Neural NMF uses backpropagation for end-to-end training.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.3230" target="_blank"><span class="impl-name">SPAMS</span></a> <span class="impl-info">Mairal et al.</span> <span class="tag mat">Matlab</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1107.0626" target="_blank"><span class="impl-name">HALS</span></a> <span class="impl-info">Gillis — Hierarchical ALS</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/110821172" target="_blank"><span class="impl-name">ANLS-NMF</span></a> <span class="impl-info">Kim, Park</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1210.1598" target="_blank"><span class="impl-name">HotTopixx</span></a> <span class="impl-info">Bittorf et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1601.06609" target="_blank"><span class="impl-name">Near-Separable NMF</span></a> <span class="impl-info">Gillis, Luce</span></div>
+                        <div class="impl"><a href="https://hal.science/hal-00945295" target="_blank"><span class="impl-name">Itakura-Saito NMF</span></a> <span class="impl-info">Fevotte</span></div>
+                        <div class="impl"><a href="https://ieeexplore.ieee.org/document/1710377" target="_blank"><span class="impl-name">K-SVD</span></a> <span class="impl-info">Elad, Aharon</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1609.09316" target="_blank"><span class="impl-name">Deep NMF</span></a> <span class="impl-info">Trigeorgis et al. &mdash; multi-layer</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2306.08818" target="_blank"><span class="impl-name">Neural NMF</span></a> <span class="impl-info">2023 &mdash; backprop hierarchical topics</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1810.01401" target="_blank"><span class="impl-name">Deep Asymmetric NMF</span></a> <span class="impl-info">DAsNMF &mdash; directed graphs</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2304.04734" target="_blank"><span class="impl-name">DANMF-MRL</span></a> <span class="impl-info">Huang et al. 2023 &mdash; autoencoder</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2008.00372" target="_blank"><span class="impl-name">TCMF</span></a> <span class="impl-info">Triple Component MF &mdash; shared+unique+sparse</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="matrix-completion" class="category cat-green">
+            <div class="cat-header">
+                <h2>Matrix Completion</h2>
+                <span class="formula">$\min_L \text{rank}(\underbrace{L}_{\text{unknown}})$ s.t. $P_{\underbrace{\Omega}_{\text{known}}}(L) = P_\Omega(\underbrace{M}_{\text{known}})$, $L$ is low-rank</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given partial observations M<sub>&Omega;</sub> at index set &Omega;, recover unknown low-rank matrix L. Convex relaxation: min ||L||<sub>*</sub> (nuclear norm). Phase transition at m &asymp; O(nr log n) samples for rank-r recovery. Made famous by Netflix Prize.</p>
+                    <p style="margin-bottom:1rem"><strong>Graph-Based (2019+):</strong> GNN-based inductive methods generalize to unseen users/items and even transfer across datasets.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/0810.3286" target="_blank"><span class="impl-name">SVT</span></a> <span class="impl-info">Cai, Cand&egrave;s, Shen</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1009.2065" target="_blank"><span class="impl-name">TFOCS</span></a> <span class="impl-info">Becker, Cand&egrave;s, Grant</span> <span class="tag mat">Matlab</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0906.2027" target="_blank"><span class="impl-name">OptSpace</span></a> <span class="impl-info">Keshavan et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0905.4206" target="_blank"><span class="impl-name">LMaFit</span></a> <span class="impl-info">Wen, Yin, Zhang</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1109.5647" target="_blank"><span class="impl-name">GRASTA</span></a> <span class="impl-info">Balzano, He</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/110845768" target="_blank"><span class="impl-name">LRGeomCG</span></a> <span class="impl-info">Vandereycken</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1206.1772" target="_blank"><span class="impl-name">Matrix ALPS</span></a> <span class="impl-info">Kyrillidis, Cevher</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1702.01005" target="_blank"><span class="impl-name">GROUSE</span></a> <span class="impl-info">Balzano, Nowak, Recht</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1206.6407" target="_blank"><span class="impl-name">Jellyfish</span></a> <span class="impl-info">Recht, Re</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1310.2632" target="_blank"><span class="impl-name">BiG-AMP</span></a> <span class="impl-info">Parker et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0909.5457" target="_blank"><span class="impl-name">SVP</span></a> <span class="impl-info">Meka et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1406.2279" target="_blank"><span class="impl-name">RTRMC</span></a> <span class="impl-info">Boumal, Absil</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1904.12058" target="_blank"><span class="impl-name">IGMC</span></a> <span class="impl-info">Zhang &amp; Chen ICLR 2020 &mdash; GNN inductive</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2108.11124" target="_blank"><span class="impl-name">IMC-GAE</span></a> <span class="impl-info">2021 &mdash; Graph Autoencoder</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2107.09475" target="_blank"><span class="impl-name">ScaledGD</span></a> <span class="impl-info">nonconvex, near-optimal</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rpca" class="category cat-red">
+            <div class="cat-header">
+                <h2>Robust PCA & Stable PCA</h2>
+                <span class="formula">$\underbrace{A}_{\text{known}} = \underbrace{L}_{\text{unknown}} + \underbrace{S}_{\text{unknown}}$, solve $\min_{L,S} \|L\|_* + \lambda\|S\|_1$, $L$ is low-rank, $S$ is sparse</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body with-figure">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given observed matrix A, decompose into unknown low-rank component L (rank(L) &le; r) and unknown sparse component S (||S||<sub>0</sub> &le; s). Nuclear norm ||L||<sub>*</sub> is convex proxy for rank; L<sub>1</sub> norm for sparsity. Phase transition: recovery succeeds when rank(L) &le; &rho;n and ||S||<sub>0</sub> &le; &alpha;n<sup>2</sup>.</p>
+                    <p style="margin-bottom:1rem"><strong>Streaming (2015+):</strong> Nearly-linear time and single-pass algorithms now available. GRASTA tracks non-stationary subspaces online.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1009.5055" target="_blank"><span class="impl-name">ALM / IALM</span></a> <span class="impl-info">Lin, Chen, Ma</span></div>
+                        <div class="impl"><a href="https://web.stanford.edu/~boyd/papers/admm_distr_stats.html" target="_blank"><span class="impl-name">ADMM</span></a> <span class="impl-info">Alternating Direction</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1206.4180" target="_blank"><span class="impl-name">GoDec</span></a> <span class="impl-info">Randomized</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1506.05058" target="_blank"><span class="impl-name">DECOLOR</span></a> <span class="impl-info">Zhou et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1311.3294" target="_blank"><span class="impl-name">ReProCS</span></a> <span class="impl-info">Qiu, Vaswani</span></div>
+                        <div class="impl"><a href="https://ieeexplore.ieee.org/document/6126500" target="_blank"><span class="impl-name">TGA</span></a> <span class="impl-info">Hauberg</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1201.5671" target="_blank"><span class="impl-name">SpaRCS</span></a> <span class="impl-info">Waters et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1306.4057" target="_blank"><span class="impl-name">Bayesian RPCA</span></a> <span class="impl-info">Ding et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1109.5647" target="_blank"><span class="impl-name">GRASTA</span></a> <span class="impl-info">Grassmannian streaming, robust to outliers</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1702.05698" target="_blank"><span class="impl-name">Online RPCA</span></a> <span class="impl-info">tuning-free via implicit regularization</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2305.02544" target="_blank"><span class="impl-name">Streaming Outlier RPCA</span></a> <span class="impl-info">Diakonikolas et al. 2023 &mdash; near-linear</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1802.05447" target="_blank"><span class="impl-name">History PCA</span></a> <span class="impl-info">streaming, parameter robust</span></div>
+                    </div>
+                </div>
+                <div class="cat-figure">
+                    <img src="d80a9763b6db8a8b6a03aa81e57faf2a2d193271.jpg" alt="RPCA comparison">
+                    <p class="fig-caption">RPCA success rates comparison. Figure from: <a href="https://arxiv.org/abs/1310.1473" target="_blank" style="color:#1565c0">Parker, Schniter, Cevher &mdash; "Bilinear Generalized Approximate Message Passing" (2014)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sparse-pca" class="category cat-pink">
+            <div class="cat-header">
+                <h2>Sparse PCA</h2>
+                <span class="formula">$\max_v \underbrace{v}_{\text{unknown}}^T \underbrace{A}_{\text{known}}^T A v$ s.t. $\|v\|_2 = 1$, $\|v\|_0 \leq k$, $v$ is sparse</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data matrix A, find principal components v with at most k non-zero entries. Sparsity constraint ||v||<sub>0</sub> &le; k yields interpretable loadings. NP-hard; convex relaxation via SDP or L<sub>1</sub> penalty. Computational-statistical gap: info-theoretic recovery possible below algorithmic threshold.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.3230" target="_blank"><span class="impl-name">SPAMS</span></a> <span class="impl-info">Mairal et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/cs/0406021" target="_blank"><span class="impl-name">DSPCA</span></a> <span class="impl-info">d'Aspremont — SDP</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0811.1645" target="_blank"><span class="impl-name">PathPCA</span></a> <span class="impl-info">d'Aspremont, Bach</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1112.2679" target="_blank"><span class="impl-name">24AM</span></a> <span class="impl-info">Richtárik et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0904.3089" target="_blank"><span class="impl-name">Structured Sparse PCA</span></a> <span class="impl-info">Jenatton, Bach</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1105.0359" target="_blank"><span class="impl-name">FSPCA</span></a> <span class="impl-info">Genevera Allen</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dictionary-learning" class="category cat-teal">
+            <div class="cat-header">
+                <h2>Dictionary Learning</h2>
+                <span class="formula">$\min_{D,X} \|\underbrace{A}_{\text{known}} - \underbrace{D}_{\text{unknown}} \underbrace{X}_{\text{unknown}}\|_F^2 + \lambda\|X\|_1$ s.t. $\|d_j\|_2 = 1$, $X$ is sparse</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body with-figure">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data matrix A, learn unknown dictionary D (columns normalized ||d<sub>j</sub>||<sub>2</sub>=1) and unknown sparse codes X (||x<sub>i</sub>||<sub>0</sub> &le; k). Dictionary can be overcomplete (more atoms than dimensions). Alternates between sparse coding (fix D, solve for X) and dictionary update.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.3230" target="_blank"><span class="impl-name">SPAMS</span></a> <span class="impl-info">Mairal — online</span> <span class="tag mat">Matlab</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://ieeexplore.ieee.org/document/1710377" target="_blank"><span class="impl-name">K-SVD</span></a> <span class="impl-info">Elad, Aharon</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1101.4026" target="_blank"><span class="impl-name">OSDL</span></a> <span class="impl-info">Szabo</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1106.4531" target="_blank"><span class="impl-name">BPFA</span></a> <span class="impl-info">Zhou — Beta Process</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1310.2632" target="_blank"><span class="impl-name">BiG-AMP</span></a> <span class="impl-info">Parker et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1407.7600" target="_blank"><span class="impl-name">CoefROMP</span></a> <span class="impl-info">Smith, Elad</span></div>
+                        <div class="impl"><a href="https://papers.nips.cc/paper/2006/hash/2d71b2ae158c7c5912cc0bbde2bb9d95-Abstract.html" target="_blank"><span class="impl-name">Efficient Sparse Coding</span></a> <span class="impl-info">Honglak Lee</span></div>
+                    </div>
+                </div>
+                <div class="cat-figure">
+                    <img src="0623d607aeade6df935dcd1228ed882669374ea9.JPG" alt="Support Recovery">
+                    <p class="fig-caption">Dictionary learning support recovery phase transition. Figure from: <a href="https://arxiv.org/abs/1804.05515" target="_blank" style="color:#1565c0">Sulam, Papyan, Romano, Elad &mdash; "Learning Simple Thresholded Features with Sparse Support Recovery" (2018)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mmv" class="category cat-pink">
+            <div class="cat-header">
+                <h2>MMV & Compressive Sensing</h2>
+                <span class="formula">$\underbrace{Y}_{\text{known}} = \underbrace{A}_{\text{known}} \underbrace{X}_{\text{unknown}}$ s.t. $\|X\|_{\text{row},0} \leq k$ (joint row-sparsity)</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given measurements Y and known sensing matrix A, recover unknown signal matrix X with at most k non-zero rows (joint sparsity across L measurement vectors). Donoho-Tanner phase transition: sharp boundary in (m/n, k/n) plane. Multiple measurements improve recovery over single-vector case (SMV).</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1004.3071" target="_blank"><span class="impl-name">SA-MUSIC</span></a> <span class="impl-info">Lee, Bresler</span></div>
+                        <div class="impl"><a href="https://ieeexplore.ieee.org/document/6034731" target="_blank"><span class="impl-name">CS-MUSIC</span></a> <span class="impl-info">Kim et al.</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1205.1548" target="_blank"><span class="impl-name">AMP-MMV</span></a> <span class="impl-info">Ziniel, Schniter</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1102.3949" target="_blank"><span class="impl-name">T-MSBL</span></a> <span class="impl-info">Zhilin Zhang</span></div>
+                        <div class="impl"><a href="https://ieeexplore.ieee.org/document/4749291" target="_blank"><span class="impl-name">REMBO</span></a> <span class="impl-info">Mishali, Eldar</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1108.1911" target="_blank"><span class="impl-name">EM-BG-AMP</span></a> <span class="impl-info">Jeremy Vila</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0803.2392" target="_blank"><span class="impl-name">SCoSaMP</span></a> <span class="impl-info">Subspace CoSaMP</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0805.0510" target="_blank"><span class="impl-name">CGIHT / NIHT</span></a> <span class="impl-info">Iterative Hard Thresholding</span></div>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem; margin-top:1rem;">
+                    <div class="cat-figure">
+                        <img src="krzakala-phase-diagram.png" alt="Probabilistic reconstruction phase diagram">
+                        <p class="fig-caption">Probabilistic reconstruction. From: <a href="https://arxiv.org/abs/1109.4424" target="_blank" style="color:#1565c0">Krzakala, Mézard, Sausset, Sun, Zdeborová (2012)</a></p>
+                    </div>
+                    <div class="cat-figure">
+                        <img src="fde51871b928c04ffdeeb49db7fad210a09329f6.jpg" alt="SCoSaMP Phase Transitions">
+                        <p class="fig-caption">SCoSaMP. From: <a href="https://arxiv.org/abs/1110.4843" target="_blank" style="color:#1565c0">Blanchard, Tanner (2012)</a></p>
+                    </div>
+                    <div class="cat-figure">
+                        <img src="692b36be2b6b4004b2bdb8d5bee4ba890b4b76de.jpg" alt="Algorithm Comparison">
+                        <p class="fig-caption">CGIHT/NIHT. From: <a href="https://arxiv.org/abs/1301.2725" target="_blank" style="color:#1565c0">Blanchard, Tanner, Wei (2015)</a></p>
+                    </div>
+                    <div class="cat-figure">
+                        <img src="429c9652f2aa4aa1cc0cf01b60795070312e2f40.jpg" alt="Permutation recovery">
+                        <p class="fig-caption">Permutation recovery. From: <a href="https://arxiv.org/abs/1406.6792" target="_blank" style="color:#1565c0">Pananjady, Wainwright, Courtade (2016)</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bss-ica" class="category cat-indigo">
+            <div class="cat-header">
+                <h2>Blind Source Separation / ICA</h2>
+                <span class="formula">$\underbrace{Y}_{\text{known}} = \underbrace{A}_{\text{unknown}} \underbrace{X}_{\text{unknown}}$ s.t. rows of $X$ are independent</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given mixed observations Y, recover unknown mixing matrix A and unknown source signals X. Key constraint: rows of X are statistically independent (ICA) or sparse (SCA). Non-Gaussianity of sources enables identification up to permutation and scaling.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://www.bsp.brain.riken.jp/ICALAB/" target="_blank"><span class="impl-name">ICALab</span></a> <span class="impl-info">ICA Toolbox</span></div>
+                        <div class="impl"><a href="https://www.cs.helsinki.fi/u/ahyvarin/papers/NN00new.pdf" target="_blank"><span class="impl-name">FastICA</span></a> <span class="impl-info">Hyv&auml;rinen</span></div>
+                        <div class="impl"><a href="http://www.tsi.enst.fr/~cardoso/guidesepsou.html" target="_blank"><span class="impl-name">BLISS</span></a> <span class="impl-info">BSS software</span></div>
+                        <div class="impl"><a href="https://www.sciencedirect.com/science/article/pii/S0165168406001204" target="_blank"><span class="impl-name">DUET</span></a> <span class="impl-info">Sparse Component</span></div>
+                        <div class="impl"><a href="https://www.lx.it.pt/~mtf/MISEP_Toolbox.html" target="_blank"><span class="impl-name">MISEP</span></a> <span class="impl-info">Mutual Information</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="autoencoders" class="category" style="border: 3px solid #9c27b0;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #9c27b0, #ba68c8)">
+                <h2 style="color:white">Linear &amp; Non-Linear Autoencoders</h2>
+                <span class="formula">$\underbrace{X}_{\text{known}} \approx \underbrace{D}_{\text{unknown}}(\underbrace{E}_{\text{unknown}}(X))$, linear case $\equiv$ PCA</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data X, learn encoder E: R<sup>d</sup>&rarr;R<sup>k</sup> and decoder D: R<sup>k</sup>&rarr;R<sup>d</sup> minimizing ||X - D(E(X))||<sup>2</sup>. <strong>Linear case:</strong> when E, D are linear maps (matrices), optimal solution recovers PCA&mdash;the encoder projects onto top-k principal components. <strong>Non-linear:</strong> E = f(VX), D = g(WZ) with nonlinearities f, g learn curved manifolds.</p>
+                    <p><strong>Key insight (Baldi & Hornik 1989):</strong> Linear autoencoders with bottleneck dimension k learn the subspace spanned by top-k principal components. Deep linear networks still recover PCA but with different learning dynamics.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://www.cs.toronto.edu/~hinton/science.pdf" target="_blank"><span class="impl-name">Deep Autoencoders</span></a> <span class="impl-info">Hinton & Salakhutdinov 2006</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1312.6114" target="_blank"><span class="impl-name">VAE</span></a> <span class="impl-info">Kingma & Welling &mdash; variational</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1511.06406" target="_blank"><span class="impl-name">Denoising AE</span></a> <span class="impl-info">Vincent et al. &mdash; robust features</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1312.5663" target="_blank"><span class="impl-name">Sparse AE</span></a> <span class="impl-info">sparsity penalty on hidden units</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1312.6114" target="_blank"><span class="impl-name">&beta;-VAE</span></a> <span class="impl-info">disentangled representations</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1901.05534" target="_blank"><span class="impl-name">VQ-VAE</span></a> <span class="impl-info">discrete latent codes</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lora" class="category" style="border: 3px solid #ff5722;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #ff5722, #ff7043)">
+                <h2 style="color:white">LoRA &amp; Low-Rank Adaptation (LLMs)</h2>
+                <span class="formula">$W' = \underbrace{W}_{\text{frozen}} + \underbrace{B}_{\text{unknown}} \underbrace{A}_{\text{unknown}}$ s.t. $B \in \mathbb{R}^{d \times r}$, $A \in \mathbb{R}^{r \times k}$, $r \ll \min(d,k)$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given frozen pretrained weight W, learn unknown low-rank update &Delta;W = BA where B&isin;R<sup>d&times;r</sup> and A&isin;R<sup>r&times;k</sup> are trainable. Rank r controls parameter count: O(r(d+k)) vs O(dk). Typical r = 4&ndash;64 for LLMs with d,k ~ 10<sup>4</sup>.</p>
+                    <p style="margin-bottom:1rem"><strong>Key insight:</strong> Pretrained weight updates during fine-tuning have low intrinsic rank. LoRA exploits this structure to achieve full fine-tuning quality with &lt;1% trainable parameters.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/2106.09685" target="_blank"><span class="impl-name">LoRA</span></a> <span class="impl-info">Hu et al. 2021 &mdash; original paper</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2305.14314" target="_blank"><span class="impl-name">QLoRA</span></a> <span class="impl-info">4-bit quantized + LoRA</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2402.12354" target="_blank"><span class="impl-name">DoRA</span></a> <span class="impl-info">Weight-Decomposed Low-Rank</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2303.10512" target="_blank"><span class="impl-name">AdaLoRA</span></a> <span class="impl-info">adaptive rank allocation</span></div>
+                        <div class="impl"><a href="https://github.com/huggingface/peft" target="_blank"><span class="impl-name">PEFT</span></a> <span class="impl-info">HuggingFace library</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2110.04366" target="_blank"><span class="impl-name">LoRA-FA</span></a> <span class="impl-info">freeze A, train B only</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2402.09353" target="_blank"><span class="impl-name">GaLore</span></a> <span class="impl-info">gradient low-rank projection</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2307.05695" target="_blank"><span class="impl-name">LoftQ</span></a> <span class="impl-info">quantization-aware LoRA init</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tensor" class="category cat-green">
+            <div class="cat-header">
+                <h2>Tensor Decomposition &amp; Tensor Networks</h2>
+                <span class="formula">CP: $\underbrace{\mathcal{T}}_{\text{known}} = \sum_r \underbrace{a_r \otimes b_r \otimes c_r}_{\text{unknown}}$; Tucker: $\mathcal{T} = \underbrace{G}_{\text{unk.}} \times_1 \underbrace{U}_{\text{unk.}} \times_2 \underbrace{V}_{\text{unk.}} \times_3 \underbrace{W}_{\text{unk.}}$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Tensor factorization view:</strong> Given observed tensor T, decompose into unknown factors. <strong>CP:</strong> sum of R rank-1 tensors (outer products). <strong>Tucker:</strong> core tensor G and unknown factor matrices U,V,W. <strong>Tensor Train:</strong> chain of 3-way cores G<sub>k</sub>, storage O(dnr<sup>2</sup>) vs O(d<sup>n</sup>). All factors unknown.</p>
+                    <p style="margin-bottom:1rem"><strong>Tensor Networks (2011+):</strong> Tensor Train (TT) achieves O(dnr&sup2;) storage. Tensor Ring (TR, 2016) adds circular structure for permutation invariance. Tensor Wheel (2024) balances TR and fully-connected networks.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/07070111X" target="_blank"><span class="impl-name">CP/PARAFAC</span></a> <span class="impl-info">rank-1 sum decomposition</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/S0895479898346995" target="_blank"><span class="impl-name">Tucker</span></a> <span class="impl-info">core tensor + factor matrices</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/090752286" target="_blank"><span class="impl-name">Tensor Train (TT)</span></a> <span class="impl-info">Oseledets 2011 &mdash; linear chain</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1606.05535" target="_blank"><span class="impl-name">Tensor Ring (TR)</span></a> <span class="impl-info">Zhao et al. 2016 &mdash; circular</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/23M1583934" target="_blank"><span class="impl-name">Tensor Wheel (TW)</span></a> <span class="impl-info">SIAM 2024 &mdash; randomized</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/090764189" target="_blank"><span class="impl-name">Hierarchical Tucker</span></a> <span class="impl-info">tree-structured</span></div>
+                        <div class="impl"><a href="https://github.com/oseledets/TT-Toolbox" target="_blank"><span class="impl-name">TT-Toolbox</span></a> <span class="impl-info">Oseledets</span> <span class="tag mat">Matlab</span></div>
+                        <div class="impl"><a href="https://jmlr.org/papers/v20/18-277.html" target="_blank"><span class="impl-name">TensorLy</span></a> <span class="impl-info">Kossaifi et al. &mdash; NumPy/PyTorch/JAX</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://tensorly.org/torch/stable/" target="_blank"><span class="impl-name">TensorLy-Torch</span></a> <span class="impl-info">deep tensor networks</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://www.tensorlab.net/" target="_blank"><span class="impl-name">Tensorlab</span></a> <span class="impl-info">Vervliet et al.</span> <span class="tag mat">Matlab</span></div>
+                        <div class="impl"><a href="https://www.bsp.brain.riken.jp/ICALAB/NTFLAB/" target="_blank"><span class="impl-name">NTFLAB</span></a> <span class="impl-info">Nonnegative Tensor</span></div>
+                        <div class="impl"><a href="https://www.cc.gatech.edu/~hpark/software/nmf-nnma.html" target="_blank"><span class="impl-name">Fast NTF</span></a> <span class="impl-info">Kim, Park</span></div>
+                        <div class="impl"><a href="https://github.com/Bihaqo/t3f" target="_blank"><span class="impl-name">t3f</span></a> <span class="impl-info">TensorFlow TT</span> <span class="tag py">Python</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommender" class="category cat-purple">
+            <div class="cat-header">
+                <h2>Recommender Systems &amp; Neural MF</h2>
+                <span class="formula">$\min_{U,V} \sum_{(i,j) \in \Omega} (\underbrace{R_{ij}}_{\text{known}} - \underbrace{u_i}_{\text{unk.}}^T \underbrace{v_j}_{\text{unk.}})^2 + \lambda(\|U\|^2 + \|V\|^2)$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given sparse rating matrix R (observed at &Omega;), learn unknown user embeddings U&isin;R<sup>m&times;k</sup> and item embeddings V&isin;R<sup>n&times;k</sup>. Predict R<sub>ij</sub> &asymp; u<sub>i</sub><sup>T</sup>v<sub>j</sub>. Regularization prevents overfitting. Implicit feedback: weighted by confidence c<sub>ij</sub>.</p>
+                    <p style="margin-bottom:1rem"><strong>NCF Debate (2020):</strong> Properly tuned dot product often beats learned MLP similarities. Simple baselines remain competitive.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://dl.acm.org/doi/10.1109/MC.2009.263" target="_blank"><span class="impl-name">ALS</span></a> <span class="impl-info">Alternating Least Squares &mdash; classic</span></div>
+                        <div class="impl"><a href="http://yifanhu.net/PUB/cf.pdf" target="_blank"><span class="impl-name">WRMF</span></a> <span class="impl-info">Hu, Koren, Volinsky 2008 &mdash; implicit</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1205.2618" target="_blank"><span class="impl-name">BPR</span></a> <span class="impl-info">Rendle et al. 2009 &mdash; pairwise ranking</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1708.05031" target="_blank"><span class="impl-name">NCF / NeuMF</span></a> <span class="impl-info">He et al. 2017 &mdash; MLP + GMF</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1507.08439" target="_blank"><span class="impl-name">LightFM</span></a> <span class="impl-info">hybrid factorization</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://github.com/benfred/implicit" target="_blank"><span class="impl-name">Implicit</span></a> <span class="impl-info">benfred &mdash; GPU ALS/BPR</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://surpriselib.com/" target="_blank"><span class="impl-name">Surprise</span></a> <span class="impl-info">scikit-surprise</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2310.11141" target="_blank"><span class="impl-name">NeuMF++</span></a> <span class="impl-info">2024 &mdash; + stacked autoencoders</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1904.12058" target="_blank"><span class="impl-name">IGMC</span></a> <span class="impl-info">GNN-based inductive</span></div>
+                        <div class="impl"><a href="https://recbole.io/" target="_blank"><span class="impl-name">RecBole</span></a> <span class="impl-info">unified framework</span> <span class="tag py">Python</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="graph-matching" class="category" style="border: 2px solid #795548;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #795548, #a1887f)">
+                <h2 style="color:white">Graph Matching</h2>
+                <span class="formula">$\underbrace{A}_{\text{known}} = \underbrace{X}_{\text{unknown}} \underbrace{B}_{\text{unknown}} X^T$ s.t. $X$ is a permutation matrix</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given adjacency matrix A of a graph, find unknown permutation matrix X and unknown structure B such that A = XBX<sup>T</sup>. Key constraint: X is a permutation matrix (binary, doubly stochastic). Used for matching nodes across two graphs or recovering hidden structure.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1310.3043" target="_blank"><span class="impl-name">FAQ</span></a> <span class="impl-info">Fast Approximate QAP</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1407.2449" target="_blank"><span class="impl-name">GRAMPA</span></a> <span class="impl-info">spectral methods for graph matching</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2110.05686" target="_blank"><span class="impl-name">SGM</span></a> <span class="impl-info">Seeded Graph Matching</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1805.02294" target="_blank"><span class="impl-name">Erd&ouml;s-R&eacute;nyi Phase Transition</span></a> <span class="impl-info">sharp threshold for exact recovery</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gen-mf" class="category" style="border: 2px solid #607d8b;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #607d8b, #90a4ae)">
+                <h2 style="color:white">Generalized Matrix Factorization</h2>
+                <span class="formula">$\underbrace{W}_{\text{known}} \odot \underbrace{L}_{\text{unknown}} = W \odot \underbrace{U}_{\text{unk.}} \underbrace{V}_{\text{unk.}}^T$, minimize $\text{rank}(L)$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given mask W indicating observed entries, find low-rank matrix L = UV<sup>T</sup> matching observations. Generalizes matrix completion (binary W) to weighted observations. The Hadamard product W&odot;L selects which entries matter.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1410.1583" target="_blank"><span class="impl-name">Weighted Low-Rank</span></a> <span class="impl-info">Srebro, Jaakkola</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1802.06916" target="_blank"><span class="impl-name">Weighted MC</span></a> <span class="impl-info">heterogeneous noise</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="archetypal" class="category" style="border: 2px solid #ff9800;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #ff9800, #ffb74d)">
+                <h2 style="color:white">Archetypal Analysis</h2>
+                <span class="formula">$\underbrace{A}_{\text{known}} = \underbrace{D}_{\text{unknown}} \underbrace{X}_{\text{unknown}}$, $D = A\underbrace{B}_{\text{unknown}}$ s.t. $X \geq 0$, $B \geq 0$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data A, find archetypes D that lie on the convex hull of the data (D = AB with B &ge; 0, columns sum to 1), and coefficients X representing each data point as convex combination of archetypes. Unlike NMF, archetypes are extreme points of the data itself.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.3230" target="_blank"><span class="impl-name">SPAMS Archetypal</span></a> <span class="impl-info">Mairal et al.</span></div>
+                        <div class="impl"><a href="https://www.jstor.org/stable/1269949" target="_blank"><span class="impl-name">Original AA</span></a> <span class="impl-info">Cutler, Breiman 1994</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1405.6472" target="_blank"><span class="impl-name">Robust AA</span></a> <span class="impl-info">Chen, Mairal et al. 2014 — outlier handling</span></div>
+                        <div class="impl"><a href="https://github.com/ulfaslak/py_pcha" target="_blank"><span class="impl-name">py_pcha</span></a> <span class="impl-info">Principal Convex Hull Analysis</span> <span class="tag py">Python</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mcs" class="category" style="border: 2px solid #9c27b0;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #9c27b0, #ce93d8)">
+                <h2 style="color:white">Matrix Compressive Sensing (MCS)</h2>
+                <span class="formula">$\underbrace{\mathcal{A}}_{\text{known}}(\underbrace{L}_{\text{unknown}}) = \underbrace{b}_{\text{known}}$ s.t. $L$ is rank-$r$</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given linear measurements b = A(L) of unknown low-rank matrix L, recover L. Extends compressive sensing from vectors to matrices. Phase transition: O(r(m+n)) measurements suffice for rank-r recovery. RIP for matrices analogous to vector case.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/0706.4138" target="_blank"><span class="impl-name">Nuclear Norm Min</span></a> <span class="impl-info">Recht, Fazel, Parrilo 2007</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1203.3864" target="_blank"><span class="impl-name">Matrix ALPS</span></a> <span class="impl-info">Kyrillidis, Cevher 2012</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0909.5457" target="_blank"><span class="impl-name">SVP</span></a> <span class="impl-info">Jain, Meka, Dhillon 2009</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0905.0044" target="_blank"><span class="impl-name">ADMiRA</span></a> <span class="impl-info">Lee, Bresler 2009</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="spcp" class="category" style="border: 2px solid #e91e63;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #e91e63, #f48fb1)">
+                <h2 style="color:white">SPCP / Noisy Robust PCA</h2>
+                <span class="formula">$\underbrace{A}_{\text{known}} = \underbrace{L}_{\text{unknown}} + \underbrace{S}_{\text{unknown}} + \underbrace{N}_{\text{unknown}}$ s.t. $L$ is low-rank, $S$ is sparse, $N$ is noise</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given noisy observations A, decompose into unknown low-rank L, unknown sparse S, and unknown dense noise N. Extends Robust PCA to handle small dense perturbations. Stable Principal Component Pursuit (SPCP) solves: min ||L||<sub>*</sub> + &lambda;||S||<sub>1</sub> s.t. ||A - L - S||<sub>F</sub> &le; &epsilon;.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1001.2363" target="_blank"><span class="impl-name">SPCP</span></a> <span class="impl-info">Zhou et al. &mdash; stable PCP</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1102.4807" target="_blank"><span class="impl-name">Noisy RPCA</span></a> <span class="impl-info">Agarwal, Negahban, Wainwright 2011</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1309.0302" target="_blank"><span class="impl-name">GoDec+</span></a> <span class="impl-info">Zhou, Tao 2013</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kernel" class="category" style="border: 2px solid #4caf50;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #4caf50, #81c784)">
+                <h2 style="color:white">Kernel Factorizations</h2>
+                <span class="formula">$\underbrace{K}_{\text{known}} = \underbrace{\Phi}_{\text{unknown}} \Phi^T$ s.t. $K$ is PSD</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given kernel matrix K (positive semi-definite), find feature representation &Phi; such that K<sub>ij</sub> = &phi;(x<sub>i</sub>)<sup>T</sup>&phi;(x<sub>j</sub>). Kernel PCA, Nystr&ouml;m approximation, and random features all exploit this factorization. Low-rank kernel approximations enable scalable kernel methods.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://papers.nips.cc/paper/2000/hash/19de10adbaa1b2ee13f77f679fa1483a-Abstract.html" target="_blank"><span class="impl-name">Nystr&ouml;m</span></a> <span class="impl-info">Williams, Seeger 2001</span></div>
+                        <div class="impl"><a href="https://proceedings.neurips.cc/paper/2007/hash/013a006f03dbc5392effeb8f18fda755-Abstract.html" target="_blank"><span class="impl-name">Random Features</span></a> <span class="impl-info">Rahimi, Recht NIPS 2007</span></div>
+                        <div class="impl"><a href="https://www.mlpack.org/papers/kpca.pdf" target="_blank"><span class="impl-name">Kernel PCA</span></a> <span class="impl-info">Sch&ouml;lkopf, Smola, M&uuml;ller 1998</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1408.3060" target="_blank"><span class="impl-name">FastFood</span></a> <span class="impl-info">Le, Sarlos, Smola 2013</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1605.07583" target="_blank"><span class="impl-name">Recursive Nystr&ouml;m</span></a> <span class="impl-info">Musco, Musco 2017</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nonconvex" class="category cat-teal">
+            <div class="cat-header">
+                <h2>Non-Convex Optimization &amp; Implicit Regularization</h2>
+                <span class="formula">$\min_{U,V} \|\underbrace{U}_{\text{unknown}} \underbrace{V}_{\text{unknown}}^T - \underbrace{M}_{\text{known}}\|_F^2$ s.t. $U \in \mathbb{R}^{m \times r}$, $V \in \mathbb{R}^{n \times r}$</span>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given observed matrix M, find unknown factors U, V such that UV<sup>T</sup> approximates M. The factorization implicitly constrains rank(UV<sup>T</sup>) &le; r. Despite non-convexity, all local minima are global when r is large enough.</p>
+                    <p><strong>Key result (Gunasekar et al. 2017):</strong> GD on matrix factorization with small init implicitly minimizes nuclear norm. Deep factorization amplifies this bias.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/2107.09475" target="_blank"><span class="impl-name">Scaled GD (ScaledGD)</span></a> <span class="impl-info">O(log(d/&epsilon;)) convergence from random init</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1407.1065" target="_blank"><span class="impl-name">Wirtinger Flow</span></a> <span class="impl-info">Cand&egrave;s et al. 2015 &mdash; phase retrieval</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1605.07719" target="_blank"><span class="impl-name">Reshaped WF</span></a> <span class="impl-info">O(n) sample complexity</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1804.02008" target="_blank"><span class="impl-name">Burer-Monteiro</span></a> <span class="impl-info">SDP via X=RR<sup>T</sup>, no spurious minima when r&gtrsim;&radic;d</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1309.0653" target="_blank"><span class="impl-name">Riemannian GD</span></a> <span class="impl-info">optimization on manifolds</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1312.0925" target="_blank"><span class="impl-name">Alternating Minimization</span></a> <span class="impl-info">provable guarantees post-2015</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1705.09280" target="_blank"><span class="impl-name">Deep MF Implicit Bias</span></a> <span class="impl-info">rank regularization grows with depth</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category">
+            <div class="cat-header" style="background:#f5f5f5">
+                <h2 style="color:#555">Other & Online SVD</h2>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">Boolean factorization, alignment (RASL/TILT), streaming decompositions, and other specialized methods.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://people.eecs.berkeley.edu/~yima/psfile/RASL_PAMI.pdf" target="_blank"><span class="impl-name">RASL</span></a> <span class="impl-info">Batch Alignment</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1012.3216" target="_blank"><span class="impl-name">TILT</span></a> <span class="impl-info">Low-rank Textures</span></div>
+                        <div class="impl"><a href="https://ieeexplore.ieee.org/document/4358477" target="_blank"><span class="impl-name">BMF</span></a> <span class="impl-info">Miettinen et al. TKDE 2008</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.3230" target="_blank"><span class="impl-name">Archetypal</span></a> <span class="impl-info">SPAMS v2.5</span></div>
+                        <div class="impl"><a href="http://sun.stanford.edu/~rmunk/PROPACK/" target="_blank"><span class="impl-name">PROPACK</span></a> <span class="impl-info">Lanczos SVD</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/S1064827500372973" target="_blank"><span class="impl-name">BLWS</span></a> <span class="impl-info">Block Lanczos</span></div>
+                        <div class="impl"><a href="https://link.springer.com/article/10.1007/BF00275687" target="_blank"><span class="impl-name">Oja's Algorithm</span></a> <span class="impl-info">J. Math. Biol. 1982</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category" style="border: 3px solid #673ab7;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #673ab7, #9575cd)">
+                <h2 style="color:white">Modern Themes (2015&ndash;2024)</h2>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">Contemporary research directions that cut across classical categories, reflecting the field's evolution toward neural network integration, implicit regularization, and computational-statistical trade-offs.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><span class="impl-name">Implicit Regularization</span> <span class="impl-info">GD on overparameterized models learns low-rank/sparse solutions</span></div>
+                        <div class="impl"><span class="impl-name">Neural Collapse</span> <span class="impl-info">deep classifiers converge to symmetric low-rank geometry</span></div>
+                        <div class="impl"><span class="impl-name">Double Descent</span> <span class="impl-info">test error decreases again past interpolation threshold</span></div>
+                        <div class="impl"><span class="impl-name">Random Feature Models</span> <span class="impl-info">kernel approximation via random projections</span></div>
+                        <div class="impl"><span class="impl-name">Overparameterization</span> <span class="impl-info">more parameters than data points aids optimization</span></div>
+                        <div class="impl"><span class="impl-name">Edge of Stability</span> <span class="impl-info">GD operates at maximum stable learning rate</span></div>
+                        <div class="impl"><span class="impl-name">Grokking</span> <span class="impl-info">delayed generalization after memorization phase</span></div>
+                        <div class="impl"><span class="impl-name">Lottery Tickets</span> <span class="impl-info">sparse subnetworks match dense performance</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category" style="border: 3px solid #e91e63;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #e91e63, #f48fb1)">
+                <h2 style="color:white">Computational-Statistical Gaps</h2>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">The "hard phase" regime where information-theoretically recovery is possible but no polynomial-time algorithm is known. Understanding these gaps is central to modern high-dimensional statistics.</p>
+                    <p><strong>Key example:</strong> In sparse PCA, the spiked covariance model exhibits a gap: spectral methods require signal strength &Theta;(n<sup>1/4</sup>) but information-theoretic limit is &Theta;(1/&radic;n).</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1304.0828" target="_blank"><span class="impl-name">Berthet-Rigollet 2013</span></a> <span class="impl-info">planted clique reduction for sparse PCA</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1201.1214" target="_blank"><span class="impl-name">Statistical Query Lower Bounds</span></a> <span class="impl-info">Feldman et al. 2012</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1710.05017" target="_blank"><span class="impl-name">Low-Degree Polynomials</span></a> <span class="impl-info">Hopkins et al. FOCS 2017</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1503.06447" target="_blank"><span class="impl-name">Sum-of-Squares Hierarchy</span></a> <span class="impl-info">Meka, Potechin, Wigderson 2015</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.1076" target="_blank"><span class="impl-name">Tensor PCA</span></a> <span class="impl-info">Richard, Montanari 2014</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1703.10146" target="_blank"><span class="impl-name">Community Detection</span></a> <span class="impl-info">Abbe survey 2017</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category cat-green">
+            <div class="cat-header">
+                <h2>Approximate Message Passing (AMP)</h2>
+                <span class="phase-badge">Phase Transition</span>
+            </div>
+            <div class="cat-body with-figure">
+                <div>
+                    <p class="description">Iterative algorithms with exact asymptotic characterization via state evolution. Predict sharp phase transitions for low-rank recovery, compressed sensing, and community detection.</p>
+                    <p><strong>State Evolution:</strong> In high-dimensional limit, AMP error follows deterministic recursion. Correctly predicts success/failure boundary.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1010.5141" target="_blank"><span class="impl-name">GAMP</span></a> <span class="impl-info">Generalized AMP &mdash; Rangan</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1310.2632" target="_blank"><span class="impl-name">BiG-AMP</span></a> <span class="impl-info">Bilinear GAMP for matrix factorization</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1701.00858" target="_blank"><span class="impl-name">Low-RAMP</span></a> <span class="impl-info">Lesieur, Krzakala, Zdeborov&aacute; 2017</span></div>
+                        <div class="impl"><a href="https://github.com/makrout/BiG-VAMP" target="_blank"><span class="impl-name">BiG-VAMP</span></a> <span class="impl-info">Vector AMP for matrix problems</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1612.01186" target="_blank"><span class="impl-name">VAMP</span></a> <span class="impl-info">Vector AMP &mdash; Rangan, Fletcher</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1701.00858" target="_blank"><span class="impl-name">Spectral + AMP</span></a> <span class="impl-info">Spectral init + AMP refinement</span></div>
+                    </div>
+                </div>
+                <div class="cat-figure">
+                    <img src="07234dca9af8b98c1edc465c5925d0e06c3aa6d2.jpg" alt="AMP Phase Diagram">
+                    <p class="fig-caption">AMP phase diagram: density vs noise. Figure from: <a href="https://arxiv.org/abs/0907.3574" target="_blank" style="color:#1565c0">Donoho, Maleki, Montanari &mdash; "Message passing algorithms for compressed sensing" (2009)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="category cat-blue">
+            <div class="cat-header">
+                <h2>Randomized Algorithms &amp; Sketching (RandNLA)</h2>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">Use random projections to reduce massive matrices into tractable smaller problems while preserving essential structure. Sketching enables single-pass streaming algorithms.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/1501.01711" target="_blank"><span class="impl-name">Frequent Directions</span></a> <span class="impl-info">Liberty et al. 2015 &mdash; deterministic, optimal</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.4357" target="_blank"><span class="impl-name">CountSketch</span></a> <span class="impl-info">sparse projection, GPU-friendly</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0909.4061" target="_blank"><span class="impl-name">SRHT</span></a> <span class="impl-info">Subsampled Randomized Hadamard</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0909.4061" target="_blank"><span class="impl-name">Randomized SVD</span></a> <span class="impl-info">Halko, Martinsson, Tropp 2011</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1310.7202" target="_blank"><span class="impl-name">Randomized LU</span></a> <span class="impl-info">Shabat, Shmueli, Averbuch 2013</span></div>
+                        <div class="impl"><a href="https://radimrehurek.com/gensim/" target="_blank"><span class="impl-name">gensim</span></a> <span class="impl-info">Radim Rehurek</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://epubs.siam.org/doi/10.1137/090767911" target="_blank"><span class="impl-name">BLENDENPIK</span></a> <span class="impl-info">Avron, Maymounkov, Toledo</span></div>
+                        <div class="impl"><a href="https://github.com/ntessore/redsvd" target="_blank"><span class="impl-name">Redsvd</span></a> <span class="impl-info">Okanohara &mdash; Randomized SVD</span> <span class="tag cpp">C++</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1408.3060" target="_blank"><span class="impl-name">Random Kitchen Sinks</span></a> <span class="impl-info">FastFood &mdash; Le, Sarlos, Smola</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2508.14209" target="_blank"><span class="impl-name">Multisketching</span></a> <span class="impl-info">Higgins 2025 — CountSketch + Gaussian, 77% faster</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category">
+            <div class="cat-header" style="background: linear-gradient(90deg, #1a237e, #303f9f)">
+                <h2 style="color:white">Frameworks & Platforms</h2>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">Comprehensive software packages integrating multiple factorization methods. GPU acceleration now mainstream via RAPIDS and PyTorch backends.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://scikit-learn.org/stable/modules/decomposition.html" target="_blank"><span class="impl-name">scikit-learn</span></a> <span class="impl-info">NMF, TruncatedSVD, PCA</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://github.com/rapidsai/cuml" target="_blank"><span class="impl-name">cuML (RAPIDS)</span></a> <span class="impl-info">GPU-accelerated, 10-50&times; speedup</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://jmlr.org/papers/v20/18-277.html" target="_blank"><span class="impl-name">TensorLy</span></a> <span class="impl-info">tensor decomposition, multi-backend</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://pytorch.org/docs/stable/linalg.html" target="_blank"><span class="impl-name">PyTorch / JAX</span></a> <span class="impl-info">differentiable linalg, autograd</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1411.3230" target="_blank"><span class="impl-name">SPAMS</span></a> <span class="impl-info">Sparse Modeling</span> <span class="tag mat">Matlab</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/1009.2065" target="_blank"><span class="impl-name">TFOCS</span></a> <span class="impl-info">Becker, Cand&egrave;s</span> <span class="tag mat">Matlab</span></div>
+                        <div class="impl"><a href="https://github.com/benfred/implicit" target="_blank"><span class="impl-name">Implicit</span></a> <span class="impl-info">GPU recommenders (ALS, BPR)</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://github.com/huggingface/peft" target="_blank"><span class="impl-name">PEFT</span></a> <span class="impl-info">HuggingFace LoRA/adapters</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://www.manopt.org/" target="_blank"><span class="impl-name">Manopt</span></a> <span class="impl-info">manifold optimization</span> <span class="tag mat">Matlab</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://www.cvxpy.org/" target="_blank"><span class="impl-name">cvxpy</span></a> <span class="impl-info">convex optimization</span> <span class="tag py">Python</span></div>
+                        <div class="impl"><a href="https://cran.r-project.org/web/packages/NMF/" target="_blank"><span class="impl-name">NMF package</span></a> <span class="impl-info">CRAN</span> <span class="tag r">R</span></div>
+                        <div class="impl"><a href="https://ml.dask.org/" target="_blank"><span class="impl-name">Dask-ML</span></a> <span class="impl-info">distributed, out-of-core</span> <span class="tag py">Python</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="books-section">
+            <h2>Essential References</h2>
+            <div class="books-grid">
+                <div class="book">
+                    <img src="3e46e3e8341df9377740f5586f479105a6bbd0fd.jpg" alt="Matrix Computations">
+                    <p class="book-title">Matrix Computations</p>
+                </div>
+                <div class="book">
+                    <img src="67881c3707f399dfa864cc4f9eaa4453a241f9ce.jpg" alt="Convex Optimization">
+                    <p class="book-title">Convex Optimization</p>
+                </div>
+                <div class="book">
+                    <img src="1a9dcc50c2500cda1137a0bdac654084865ac884.jpg" alt="Topics in Matrix Analysis">
+                    <p class="book-title">Topics in Matrix Analysis</p>
+                </div>
+                <div class="book">
+                    <img src="9ea5756c85ffd0056a3f259c7506a267c1ab20a9.jpg" alt="NMF Book">
+                    <p class="book-title">NMF & Tensor Factorizations</p>
+                </div>
+                <div class="book">
+                    <img src="c8b5eb30709d1735bb2425a35b5ecfc01e679d1f.jpg" alt="Matrix Manifolds">
+                    <p class="book-title">Matrix Manifolds</p>
+                </div>
+                <div class="book">
+                    <img src="d740cd9466200eb73aa7d98194be5fd985324057.jpg" alt="Convex Opt SP">
+                    <p class="book-title">Convex Opt. in SP</p>
+                </div>
+                <div class="book">
+                    <img src="ec6637ecf555954d7670d4d44a43b6873ff2290c.jpg" alt="Optimization ML">
+                    <p class="book-title">Optimization for ML</p>
+                </div>
+                <div class="book">
+                    <img src="cac9568e8f9c3a54a6a94f4cfdc5396f0b602742.jpg" alt="LAPACK">
+                    <p class="book-title">LAPACK Guide</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="category cat-indigo">
+            <div class="cat-header">
+                <h2>Phase Transition Atlas (2020s Framing)</h2>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">Modern papers separate information-theoretic limits from algorithmic limits, and often explain gaps with spectral thresholds or state-evolution analysis.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><span class="impl-name">Information-Theoretic Limit</span> <span class="impl-info">feasibility boundary, often via counting or mutual information</span></div>
+                        <div class="impl"><span class="impl-name">Algorithmic Threshold</span> <span class="impl-info">practical recoverability for a given solver family</span></div>
+                        <div class="impl"><span class="impl-name">Spectral / BBP Transition</span> <span class="impl-info">Baik-Ben Arous-P&eacute;ch&eacute; (2005): eigenvalue separates from bulk</span></div>
+                        <div class="impl"><span class="impl-name">State Evolution (AMP)</span> <span class="impl-info">predicts error curves and sharp transitions</span></div>
+                        <div class="impl"><span class="impl-name">Computational-Statistical Gap</span> <span class="impl-info">"hard phase" where info-theoretic recovery possible but poly-time fails</span></div>
+                        <div class="impl"><span class="impl-name">Planted Clique Hardness</span> <span class="impl-info">reduction-based lower bounds (Berthet-Rigollet 2013)</span></div>
+                        <div class="impl"><span class="impl-name">Rank / Sparsity vs Sampling</span> <span class="impl-info">classic completion and sparse recovery axes</span></div>
+                        <div class="impl"><span class="impl-name">Noise vs Signal Strength</span> <span class="impl-info">robustness regimes and breakdown points</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p><strong>The Advanced Matrix Factorization Jungle</strong></p>
+        <p>Compiled by Igor Carron | <a href="https://nuit-blanche.blogspot.com">Nuit Blanche</a></p>
+        <p style="margin-top:1rem; opacity:0.8; font-size:0.9rem">A living document tracking the state of the art | Updated January 2025</p>
+    </footer>
+</body>
+</html>
