@@ -1134,6 +1134,27 @@
             </div>
         </section>
 
+        <section id="binary-mf" class="category" style="border: 3px solid #00695c;">
+            <div class="cat-header" style="background: linear-gradient(90deg, #00695c, #00897b)">
+                <h2 style="color:white">Binary Matrix Factorization</h2>
+                <span class="formula">$\underbrace{D}_{\text{known}} = \underbrace{T}_{\text{unknown}} \underbrace{A}_{\text{unknown}}$ s.t. $T \in \{0,1\}^{m \times r}$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given data matrix D&isin;R<sup>m&times;n</sup>, find unknown binary factor T&isin;{0,1}<sup>m&times;r</sup> and coefficient matrix A&isin;R<sup>r&times;n</sup> such that D = TA. Optional constraint: A<sup>T</sup>&middot;1<sub>r</sub> = 1<sub>n</sub> (columns sum to 1 for convex combinations). Unlike Boolean Matrix Factorization, A is real-valued.</p>
+                    <p><strong>Key insight (Slawski et al. 2013):</strong> Despite the combinatorial constraint T&isin;{0,1}<sup>m&times;r</sup>, the problem is tractable when r is small. The algorithm finds all binary vertices of aff(D) using the Littlewood-Offord lemma, achieving O(m&middot;2<sup>r-1</sup>) complexity.</p>
+                    <p style="margin-bottom:1rem"><strong>Applications:</strong> DNA methylation unmixing (T = methylation profiles per cell type, A = mixing proportions), binary classification ensembles, topic modeling with hard assignments.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1401.6024" target="_blank"><span class="impl-name">Binary Components</span></a> <span class="impl-info"><a href="https://sites.google.com/view/mslawski/home" target="_blank">M. Slawski</a>, <a href="https://www.ml.uni-saarland.de/people/hein.htm" target="_blank">M. Hein</a>, P. Lutsik &mdash; NeurIPS 2013</span></div>
+                        <div class="impl"><a href="https://github.com/IgorCarron/Binary-Matrix-Factorization" target="_blank"><span class="impl-name">binary_matrix_factorization</span></a> <span class="impl-info">Python implementation</span> <a href="https://github.com/IgorCarron/Binary-Matrix-Factorization" target="_blank" class="tag py">Python</a></div>
+                        <div class="impl"><a href="https://doi.org/10.1186/s12859-019-2865-6" target="_blank"><span class="impl-name">MeDeCom</span></a> <span class="impl-info">DNA methylation deconvolution (Lutsik et al. 2017)</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/0712.4273" target="_blank"><span class="impl-name">Boolean MF</span></a> <span class="impl-info">Miettinen et al. 2008 &mdash; both factors binary</span></div>
+                        <div class="impl"><a href="https://www.cs.rpi.edu/~zaki/PaperDir/SDM07.pdf" target="_blank"><span class="impl-name">PROXIMUS</span></a> <span class="impl-info">Koyut&uuml;rk, Grama &mdash; recursive binary partitioning</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="mcs" class="category" style="border: 2px solid #9c27b0;">
             <div class="cat-header" style="background: linear-gradient(90deg, #9c27b0, #ce93d8)">
                 <h2 style="color:white">Matrix Compressive Sensing (MCS)</h2>
@@ -1385,27 +1406,6 @@
                 </div>
             </div>
         </div>
-
-        <section id="binary-mf" class="category" style="border: 3px solid #00695c;">
-            <div class="cat-header" style="background: linear-gradient(90deg, #00695c, #00897b)">
-                <h2 style="color:white">Binary Matrix Factorization</h2>
-                <span class="formula">$\underbrace{D}_{\text{known}} = \underbrace{T}_{\text{unknown}} \underbrace{A}_{\text{unknown}}$ s.t. $T \in \{0,1\}^{m \times r}$</span>
-            </div>
-            <div class="cat-body">
-                <div>
-                    <p class="description"><strong>Matrix factorization view:</strong> Given data matrix D&isin;R<sup>m&times;n</sup>, find unknown binary factor T&isin;{0,1}<sup>m&times;r</sup> and coefficient matrix A&isin;R<sup>r&times;n</sup> such that D = TA. Optional constraint: A<sup>T</sup>&middot;1<sub>r</sub> = 1<sub>n</sub> (columns sum to 1 for convex combinations). Unlike Boolean Matrix Factorization, A is real-valued.</p>
-                    <p><strong>Key insight (Slawski et al. 2013):</strong> Despite the combinatorial constraint T&isin;{0,1}<sup>m&times;r</sup>, the problem is tractable when r is small. The algorithm finds all binary vertices of aff(D) using the Littlewood-Offord lemma, achieving O(m&middot;2<sup>r-1</sup>) complexity.</p>
-                    <p style="margin-bottom:1rem"><strong>Applications:</strong> DNA methylation unmixing (T = methylation profiles per cell type, A = mixing proportions), binary classification ensembles, topic modeling with hard assignments.</p>
-                    <div class="impl-grid" style="margin-top:1rem">
-                        <div class="impl"><a href="https://arxiv.org/abs/1401.6024" target="_blank"><span class="impl-name">Binary Components</span></a> <span class="impl-info"><a href="https://sites.google.com/view/mslawski/home" target="_blank">M. Slawski</a>, <a href="https://www.ml.uni-saarland.de/people/hein.htm" target="_blank">M. Hein</a>, P. Lutsik &mdash; NeurIPS 2013</span></div>
-                        <div class="impl"><a href="https://github.com/IgorCarron/Binary-Matrix-Factorization" target="_blank"><span class="impl-name">binary_matrix_factorization</span></a> <span class="impl-info">Python implementation</span> <a href="https://github.com/IgorCarron/Binary-Matrix-Factorization" target="_blank" class="tag py">Python</a></div>
-                        <div class="impl"><a href="https://doi.org/10.1186/s12859-019-2865-6" target="_blank"><span class="impl-name">MeDeCom</span></a> <span class="impl-info">DNA methylation deconvolution (Lutsik et al. 2017)</span></div>
-                        <div class="impl"><a href="https://arxiv.org/abs/0712.4273" target="_blank"><span class="impl-name">Boolean MF</span></a> <span class="impl-info">Miettinen et al. 2008 &mdash; both factors binary</span></div>
-                        <div class="impl"><a href="https://www.cs.rpi.edu/~zaki/PaperDir/SDM07.pdf" target="_blank"><span class="impl-name">PROXIMUS</span></a> <span class="impl-info">Koyutürk, Grama &mdash; recursive binary partitioning</span></div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <section class="category cat-indigo">
             <div class="cat-header">
