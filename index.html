@@ -1369,7 +1369,7 @@
                 <h2>Preconditioners &amp; Fast Multipole Methods</h2>
                 <span class="phase-badge">AMP</span>
             </div>
-            <div class="cat-body">
+            <div class="cat-body with-figure">
                 <div>
                     <p class="description">Fast multipole methods (FMM) can be viewed as hierarchical matrix factorizations. Exploiting low-rank structure of off-diagonal blocks enables O(N) or O(N log N) complexity for dense matrix-vector products and direct solvers. H-matrices, H²-matrices, and butterfly factorizations provide fast approximate inverses and preconditioners.</p>
                     <p><strong>Matrix Factorization View:</strong> The multipole expansion A ≈ B̃C decomposes dense kernel matrices into structured low-rank products. Quadtree/octree decompositions yield hierarchical factorizations with sparse + low-rank blocks.</p>
@@ -1378,6 +1378,12 @@
                         <div class="impl"><a href="https://users.oden.utexas.edu/~pgm/Teaching/2022_fast_algorithms/2022_04_M397C_fmm.pdf" target="_blank"><span class="impl-name">FMM Tutorial</span></a> <span class="impl-info">Martinsson &mdash; Fast algorithms in scientific computing</span></div>
                         <div class="impl"><a href="https://arxiv.org/abs/2511.07773" target="_blank"><span class="impl-name">Fast Direct Solvers</span></a> <span class="impl-info">Martinsson, O'Neil &mdash; survey on hierarchical factorizations</span></div>
                     </div>
+                </div>
+                <div class="cat-figure">
+                    <img src="fmm-h2matrix.png" alt="H²-matrix decomposition" style="margin-bottom: 1rem;">
+                    <p class="fig-caption">H²-matrix decomposition: A = S + UKV<sup>T</sup> (sparse + low-rank). Quadtree structure generalizes to higher dimensions.</p>
+                    <img src="fmm-multipole.png" alt="Multipole expansion as matrix factorization" style="margin-top: 1rem;">
+                    <p class="fig-caption">Multipole expansion as matrix factorization: A ≈ B̃C. Figure from: <a href="https://users.oden.utexas.edu/~pgm/Teaching/2022_fast_algorithms/2022_04_M397C_fmm.pdf" target="_blank" style="color:#1565c0">Martinsson &mdash; FMM Tutorial</a></p>
                 </div>
             </div>
         </section>
