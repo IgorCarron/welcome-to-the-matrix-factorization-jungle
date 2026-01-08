@@ -396,7 +396,7 @@
                 <h2>Welcome to the Jungle</h2>
                 <p style="margin-bottom:1rem">This Matrix Factorization Jungle page ventures beyond classical decompositions into factorizations that impose <em>structural assumptions on the unknowns</em>&mdash;sparsity, low-rank, non-negativity, subspace membership, and more. As sparse recovery solvers matured, a rich ecosystem emerged. NMF was the first of such decomposition and the discovery of <strong>compressive sensing</strong> and that <strong>nuclear norms can serve as convex proxies for rank</strong> opened the floodgates to powerful new decomposition techniques.</p>
                 <p>What distinguishes these methods is that they come with <strong>phase transitions</strong>&mdash;sharp boundaries in parameter space where algorithms succeed or fail. This document maps that landscape, from video surveillance to recommendation systems, blending randomized linear algebra, nonconvex optimization, and probabilistic modeling.</p>
-                <p style="margin-top:1rem"><strong>Traditional Matrix Decompositions:</strong> There is a stellar and comprehensive treatment of classical matrix factorization techniques&mdash;LU, Cholesky, QR, SVD, Polar, Eigendecomposition, Jordan, Schur, CUR/Skeleton, Hessenberg, Tridiagonal, and Bidiagonal decompositions&mdash;in Jun Lu's monographs: <a href="https://arxiv.org/abs/2201.00145" target="_blank" style="color:#1565c0">"Matrix Decomposition and Applications"</a> and <a href="https://arxiv.org/abs/2107.02579" target="_blank" style="color:#1565c0">"Numerical Matrix Decomposition and its Modern Applications"</a>. Most of the traditional techniques used to not put constraints on the matrix/data to be factorized.</p>
+                <p style="margin-top:1rem"><strong>Traditional Matrix Decompositions:</strong> There is a stellar and comprehensive treatment of classical matrix factorization techniques&mdash;LU, Cholesky, QR, SVD, Polar, Eigendecomposition, Jordan, Schur, CUR/Skeleton, Hessenberg, Tridiagonal, and Bidiagonal decompositions&mdash;in Jun Lu's monographs: <a href="https://arxiv.org/abs/2201.00145" target="_blank" style="color:#1565c0">"Matrix Decomposition and Applications"</a> and <a href="https://arxiv.org/abs/2107.02579" target="_blank" style="color:#1565c0">"Numerical Matrix Decomposition and its Modern Applications"</a>. Most of the traditional techniques used to not put constraints on the matrix/data to be factorized. In scientific computing however, operators are sometimes approximated with decompositions and factorization to permit the design of better inverse problem solvers (see recent survey <a href="https://arxiv.org/abs/2511.07773" target="_blank" style="color:#1565c0">"Fast Direct Solvers"</a> by Per-Gunnar Martinsson and Michael O'Neil).</p>
                 <div class="notation">
                     <strong>Notation:</strong> <b>A</b> = observed &nbsp;|&nbsp; <b>L</b> = low-rank &nbsp;|&nbsp; <b>S</b> = sparse &nbsp;|&nbsp; <b>N</b> = noise &nbsp;|&nbsp; <b>D</b> = dictionary &nbsp;|&nbsp; <b>X</b> = coefficients
                 </div>
@@ -1359,6 +1359,24 @@
                         <div class="impl"><a href="https://github.com/cvxpy/cvxpy" target="_blank"><span class="impl-name">cvxpy</span></a> <span class="impl-info">convex optimization</span><span class="stars">6.1k</span> <a href="https://github.com/cvxpy/cvxpy" target="_blank" class="tag py">Python</a></div>
                         <div class="impl"><a href="https://cran.r-project.org/web/packages/NMF/" target="_blank"><span class="impl-name">NMF package</span></a> <span class="impl-info">CRAN</span> <a href="https://cran.r-project.org/web/packages/NMF/" target="_blank" class="tag r">R</a></div>
                         <div class="impl"><a href="https://github.com/dask/dask-ml" target="_blank"><span class="impl-name">Dask-ML</span></a> <span class="impl-info">distributed, out-of-core</span> <a href="https://github.com/dask/dask-ml" target="_blank" class="tag py">Python</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category cat-green">
+            <div class="cat-header">
+                <h2>Preconditioners &amp; Fast Multipole Methods</h2>
+                <span class="phase-badge">AMP</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description">Fast multipole methods (FMM) can be viewed as hierarchical matrix factorizations. Exploiting low-rank structure of off-diagonal blocks enables O(N) or O(N log N) complexity for dense matrix-vector products and direct solvers. H-matrices, H²-matrices, and butterfly factorizations provide fast approximate inverses and preconditioners.</p>
+                    <p><strong>Matrix Factorization View:</strong> The multipole expansion A ≈ B̃C decomposes dense kernel matrices into structured low-rank products. Quadtree/octree decompositions yield hierarchical factorizations with sparse + low-rank blocks.</p>
+                    <div class="impl-grid" style="margin-top:1rem">
+                        <div class="impl"><a href="https://arxiv.org/abs/1508.01835" target="_blank"><span class="impl-name">Inverse FMM</span></a> <span class="impl-info">Coulier, Pouransari, Darve &mdash; fast approximate direct solver as preconditioner</span></div>
+                        <div class="impl"><a href="https://users.oden.utexas.edu/~pgm/Teaching/2022_fast_algorithms/2022_04_M397C_fmm.pdf" target="_blank"><span class="impl-name">FMM Tutorial</span></a> <span class="impl-info">Martinsson &mdash; Fast algorithms in scientific computing</span></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2511.07773" target="_blank"><span class="impl-name">Fast Direct Solvers</span></a> <span class="impl-info">Martinsson, O'Neil &mdash; survey on hierarchical factorizations</span></div>
                     </div>
                 </div>
             </div>
