@@ -1,4 +1,4 @@
-# The Advanced Matrix Factorization Jungle
+# The Advanced Matrix Factorization Jungle Page
 
 ## [View the Live Page](https://igorcarron.github.io/welcome-to-the-matrix-factorization-jungle/)
 
