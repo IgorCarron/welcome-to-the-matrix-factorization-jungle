@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Advanced Matrix Factorization Jungle</title>
     <link rel="icon" type="image/jpeg" href="junglegreen.jpg">
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -375,14 +383,19 @@
             .cat-body.with-figure { grid-template-columns: 1fr; }
             header h1 { font-size: 2rem; }
         }
+
+        /* Formula styling */
+        .formula {
+            display: block;
+            margin: 0.5rem 0;
+            padding: 0.5rem 0.75rem;
+            background: linear-gradient(135deg, #f5f9f0 0%, #e8f4d9 100%);
+            border-left: 3px solid #4a8a4a;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
     </style>
-    <script>
-        MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-            svg: { fontCache: 'global' }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 </head>
 <body>
     <header>
@@ -1022,7 +1035,7 @@
                         <div class="impl"><a href="https://arxiv.org/abs/2307.05695" target="_blank"><span class="impl-name">LoftQ</span></a> <span class="impl-info">quantization-aware LoRA init</span></div>
                         <div class="impl"><a href="https://github.com/microsoft/LoRA" target="_blank"><span class="impl-name">microsoft/LoRA</span></a> <span class="impl-info"><a href="https://www.microsoft.com/en-us/research/" target="_blank">Microsoft Research</a> &mdash; pip install loralib</span><span class="stars">13.1k</span> <a href="https://github.com/microsoft/LoRA" target="_blank" class="tag py">Python</a></div>
                     
-                        <div class="impl"><a href="https://arxiv.org/abs/2311.12023" target="_blank"><span class="impl-name">LQ-LoRA</span></a> <span class="impl-info"><a href="https://arxiv.org/search/?searchtype=author&query=Han%20Guo" target="_blank">Han Guo</a>, <a href="https://arxiv.org/search/?searchtype=author&query=Philip%20Greengard" target="_blank">Philip Greengard</a>, <a href="https://arxiv.org/search/?searchtype=author&query=Eric%20P.%20Xing" target="_blank">Eric P. Xing</a> et al. — Paper: LQ-LoRA: Low-rank Plus Quantized Matrix Decomposition for Efficient Language Model Finetuning</span> <a href="https://github.com/HanGuo97/lq-lora" target="_blank" class="tag py">Python</a></div></div>
+                        <div class="impl"><a href="https://arxiv.org/abs/2311.12023" target="_blank"><span class="impl-name">LQ-LoRA</span></a> <span class="impl-info"><a href="https://arxiv.org/search/?searchtype=author&query=Han%20Guo" target="_blank">Han Guo</a>, <a href="https://arxiv.org/search/?searchtype=author&query=Philip%20Greengard" target="_blank">Philip Greengard</a>, <a href="https://arxiv.org/search/?searchtype=author&query=Eric%20P.%20Xing" target="_blank">Eric P. Xing</a> et al. — Low-rank Plus Quantized Matrix Decomposition for Efficient Language Model Finetuning</span> <span class="formula">$W \approx \underbrace{L}_{\text{low-rank}} + \underbrace{Q}_{\text{quantized}}$</span> <a href="https://github.com/HanGuo97/lq-lora" target="_blank" class="tag py">Python</a></div></div>
                 </div>
             </div>
         </section>
