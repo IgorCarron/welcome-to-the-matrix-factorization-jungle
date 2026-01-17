@@ -16,8 +16,12 @@ labels: suggestion
 <!-- One or two sentences on what it does -->
 
 
-**Code available?**
+**Code/repo available?**
 <!-- Link to implementation if one exists, or "None known" -->
+
+
+**Phase transition identified?**
+<!-- If yes, mention the article and figure number where it is viewable -->
 
 
 **Suggested category**

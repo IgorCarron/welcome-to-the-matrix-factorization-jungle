@@ -29,7 +29,7 @@ This resource maps advanced matrix decomposition techniques that impose structur
 
 ### Contributing
 
-Know of a decomposition or factorization technique that's missing? [Open an issue](https://github.com/IgorCarron/welcome-to-the-matrix-factorization-jungle/issues/new/choose) with the paper reference, a brief description, and ideally a link to code if available.
+Know of a decomposition or factorization technique that's missing? [Open an issue](https://github.com/IgorCarron/welcome-to-the-matrix-factorization-jungle/issues/new/choose) with the paper reference, a brief description, and ideally a link to code/repo if available would be outstanding. If you have identified a phase transition, please mention the article and the figure in which it is viewable.
 
 ### About
 
