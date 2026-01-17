@@ -11,7 +11,11 @@ A comprehensive, living document on state-of-the-art matrix factorization algori
 
 ---
 
-This resource maps advanced matrix decomposition techniques that impose structural constraints (sparsity, low-rank, non-negativity) on unknown factors, with emphasis on methods exhibiting **phase transitions** - sharp boundaries where algorithms transition from failure to success. The first instance of this resource was started on [August 2011 on Nuit Blanche](https://nuit-blanche.blogspot.com/2011/08/current-jungle-in-matrix-factorization.html).
+This resource maps advanced matrix decomposition techniques that impose structural constraints (sparsity, low-rank, non-negativity) on unknown factors, with emphasis on methods exhibiting **phase transitions** - sharp boundaries where algorithms transition from failure to success. The first instance of this resource was started on [August 2011 on the Nuit Blanche blog](https://nuit-blanche.blogspot.com/2011/08/current-jungle-in-matrix-factorization.html).
+
+### Contributing
+
+Know of a decomposition or factorization technique or an implementation or a phase transition that's missing? [Open an issue](https://github.com/IgorCarron/welcome-to-the-matrix-factorization-jungle/issues/new/choose) and mention the paper reference (arxiv, bioxiv, DOI, techrxiv, etc....) where you found it, a brief description of the factorization or decomposition (a new one or one that has already been identified in the page), and ideally a link to code/repo. If you have identified a phase transition, please mention the article and the figure in which it is viewable (as a bound or as a graph).
 
 ### Topics Covered
 
@@ -27,12 +31,8 @@ This resource maps advanced matrix decomposition techniques that impose structur
 - **Neural Methods** - LoRA, autoencoders, implicit regularization
 - **Graph Matching** - Correspondence problems
 
-### Contributing
-
-Know of a decomposition or factorization technique that's missing? [Open an issue](https://github.com/IgorCarron/welcome-to-the-matrix-factorization-jungle/issues/new/choose) with the paper reference, a brief description, and ideally a link to code/repo if available would be outstanding. If you have identified a phase transition, please mention the article and the figure in which it is viewable.
-
 ### About
 
-Compiled by [Igor Carron](https://nuit-blanche.blogspot.com) | First announced on Nuit Blanche in August 2011
+This page was originally compiled by [Igor Carron](https://nuit-blanche.blogspot.com) | First announced on Nuit Blanche in August 2011
 
 Continuously updated - Last revision: January 2026
