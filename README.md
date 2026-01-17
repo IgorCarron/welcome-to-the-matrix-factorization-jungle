@@ -2,6 +2,11 @@
 
 ## [View the Live Page](https://igorcarron.github.io/welcome-to-the-matrix-factorization-jungle/)
 
+<p align="center">
+  <img src="images/jungle-page-overview.png" width="45%" alt="Matrix Factorization Jungle Overview">
+  <img src="images/quick-reference-table.png" width="45%" alt="Quick Reference Table">
+</p>
+
 A comprehensive, living document on state-of-the-art matrix factorization algorithms, implementations, and phase transitions.
 
 ---
