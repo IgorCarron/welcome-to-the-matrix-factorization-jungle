@@ -6,7 +6,7 @@ A comprehensive, living document on state-of-the-art matrix factorization algori
 
 ---
 
-This resource maps advanced matrix decomposition techniques that impose structural constraints (sparsity, low-rank, non-negativity) on unknown factors, with emphasis on methods exhibiting **phase transitions** - sharp boundaries where algorithms transition from failure to success.
+This resource maps advanced matrix decomposition techniques that impose structural constraints (sparsity, low-rank, non-negativity) on unknown factors, with emphasis on methods exhibiting **phase transitions** - sharp boundaries where algorithms transition from failure to success. The first instance of this resource was started on [August 2011 on Nuit Blanche](https://nuit-blanche.blogspot.com/2011/08/current-jungle-in-matrix-factorization.html).
 
 ### Topics Covered
 
