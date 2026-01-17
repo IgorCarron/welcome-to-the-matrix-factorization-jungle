@@ -35,4 +35,4 @@ Know of a decomposition or factorization technique that's missing? [Open an issu
 
 Compiled by [Igor Carron](https://nuit-blanche.blogspot.com) | First announced on Nuit Blanche in August 2011
 
-Continuously updated - Last revision: January 2025
+Continuously updated - Last revision: January 2026
