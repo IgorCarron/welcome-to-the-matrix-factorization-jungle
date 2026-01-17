@@ -27,6 +27,10 @@ This resource maps advanced matrix decomposition techniques that impose structur
 - **Neural Methods** - LoRA, autoencoders, implicit regularization
 - **Graph Matching** - Correspondence problems
 
+### Contributing
+
+Know of a decomposition or factorization technique that's missing? [Open an issue](https://github.com/IgorCarron/welcome-to-the-matrix-factorization-jungle/issues/new/choose) with the paper reference, a brief description, and ideally a link to code if available.
+
 ### About
 
 Compiled by [Igor Carron](https://nuit-blanche.blogspot.com) | First announced on Nuit Blanche in August 2011
