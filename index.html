@@ -643,6 +643,15 @@
                         <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">K &ge; 0, PSD</td>
                         <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
                     </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><a href="#self-attention" style="color: #303f9f; font-weight: bold;">Self-Attention / Bilinear Factorization</a><br>Input-dependent factorized similarity operator</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">S = (U<sub>k</sub>X)<sup>T</sup>(U<sub>q</sub>X)<br>A = softmax<sub>columns</sub>(S)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Task-dependent training loss</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">X (tokens)</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">U<sub>q</sub>, U<sub>k</sub></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Bilinear scores; Gram / symmetric PSD if U<sub>q</sub> = U<sub>k</sub>; softmax positivity + column simplex; optional masking / sparsity; rank restriction only if the latent dimension is a bottleneck</td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #888;">&mdash;</td>
+                    </tr>
                 </tbody>
             </table>
             <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 1rem;">
@@ -1033,6 +1042,30 @@
                         <div class="impl"><a href="https://arxiv.org/abs/1711.00937" target="_blank"><span class="impl-name">VQ-VAE</span></a> <span class="impl-info">van den Oord et al. &mdash; discrete codes</span></div>
                         <div class="impl"><a href="https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_pca.py" target="_blank"><span class="impl-name">sklearn.decomposition.PCA</span></a> <span class="impl-info">scikit-learn &mdash; linear AE equivalent</span><span class="stars">64.6k</span> <a href="https://github.com/scikit-learn/scikit-learn" target="_blank" class="tag py">Python</a></div>
                         <div class="impl"><a href="https://github.com/pytorch/examples/tree/main/vae" target="_blank"><span class="impl-name">PyTorch VAE</span></a> <span class="impl-info">official example</span> <a href="https://github.com/pytorch/examples" target="_blank" class="tag py">Python</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="self-attention" class="category cat-indigo">
+            <div class="cat-header">
+                <h2>Self-Attention as a Structured, Input-Dependent Factorization</h2>
+                <span class="formula">$S = K^TQ = X^TU_k^TU_qX$</span>
+            </div>
+            <div class="cat-body">
+                <div>
+                    <p class="description"><strong>Matrix factorization view:</strong> Given token features $X$, learn query and key maps that construct an input-dependent similarity operator. Factorization exposes structure: Gram/PSD geometry, bilinear relationships, and shared latent coordinates. <strong>Rank is only one possible structural constraint.</strong></p>
+                    <p style="margin-bottom:1rem">Here we use Turner's notation: $X\in\mathbb{R}^{D\times N}$ has tokens as columns (locally, $A$ denotes attention and $S$ denotes scores). For learned maps $U_q,U_k\in\mathbb{R}^{r\times D}$, the factors $Q=U_qX$ and $K=U_kX$ lie in $\mathbb{R}^{r\times N}$, and $S=K^TQ\in\mathbb{R}^{N\times N}$. The multiplication $Y=XA$ applies attention; the score construction is the factorization considered here. The usual $1/\sqrt{r}$ score scaling can be absorbed into the projection maps.</p>
+                    <p style="margin-bottom:1rem"><strong>Gram / symmetric PSD structure:</strong> Tying the maps, $U_q=U_k=U$, gives $Z=UX$ and $S=Z^TZ=X^TMX$, where $M=U^TU\in\mathbb{R}^{D\times D}$. Both $M$ and $S$ are symmetric positive semidefinite. This is a learned PSD metric (possibly singular), and $S$ is a Gram matrix in shared latent coordinates; see <a href="#kernel">Kernel Factorizations</a>.</p>
+                    <p style="margin-bottom:1rem"><strong>Bilinear / asymmetric structure:</strong> With separate maps, $M=U_k^TU_q$ and $S=X^TMX$ need not be symmetric or PSD. Query and key features occupy compatible latent coordinates, but their distinct maps allow directional similarities. The difference between $U^TU$ and $U_k^TU_q$ is a difference in admissible matrix classes.</p>
+                    <p style="margin-bottom:1rem"><strong>Conditional rank bottleneck:</strong> These dimensions additionally imply $\operatorname{rank}(M)\leq\min(r,D)$ and $\operatorname{rank}(S)\leq\min(r,\operatorname{rank}(X))$. The projection dimension adds a rank restriction only when it is a bottleneck: $r&lt;D$ for $M$, or $r&lt;\operatorname{rank}(X)$ for the scores. Low rank does not define the factorization.</p>
+                    <p style="margin-bottom:1rem"><strong>Softmax / simplex structure:</strong> Set $A=\operatorname{softmax}_{\mathrm{columns}}(S)$, with $A_{ij}=\exp(S_{ij})/\sum_{\ell=1}^{N}\exp(S_{\ell j})$. For finite, unmasked scores, entries are positive and each column sums to one, so each output token in $Y=XA$ is a convex combination of input tokens. This nonlinear normalization adds a different constraint class: the score rank bound does <strong>not</strong> generally survive softmax, and even symmetric scores need not produce symmetric attention.</p>
+                    <p style="margin-bottom:1rem"><strong>Masking / support structure:</strong> Setting forbidden scores to $-\infty$ before softmax gives zero attention on those entries and positive weights on the allowed support, still summing to one in each column. Each column must have at least one allowed entry. In this column-token convention, causal attention permits $i\leq j$, making $A$ upper triangular; other masks impose other sparsity patterns.</p>
+                    <p style="margin-bottom:1rem"><strong>Multi-head structure:</strong> Each head has its own factors $Q_h=U_{q,h}X$, $K_h=U_{k,h}X$, scores $S_h=K_h^TQ_h$, and normalized attention $A_h$. Turner writes $Y=\sum_{h=1}^{H}V_hXA_h$, where $V_h\in\mathbb{R}^{D\times D}$ and $Y\in\mathbb{R}^{D\times N}$. The heads combine several structured, input-dependent operators in parallel, each with its own learned bilinear geometry. The full map is nonlinear because $A_h$ depends on $X$.</p>
+                    <p style="margin-bottom:1rem"><strong>Factorized weights and updates:</strong> Optionally, $V_h=U_hU_{v,h}$ with $U_h\in\mathbb{R}^{D\times p}$ and $U_{v,h}\in\mathbb{R}^{p\times D}$. This parameterizes the weight itself through factors; $p&lt;D$ additionally restricts its rank. By comparison, <a href="#lora">LoRA</a> uses $W'=W_0+BA$: the frozen base $W_0$ is not constrained to low rank, while the update $BA$ has a chosen small inner dimension. Neither the full adapted weight nor the post-softmax attention matrix is thereby required to be low rank.</p>
+                    <div class="impl-grid">
+                        <div class="impl"><a href="https://arxiv.org/abs/2304.10557v6" target="_blank"><span class="impl-name">An Introduction to Transformers</span></a> <span class="impl-info">Richard E. Turner &mdash; arXiv:2304.10557v6, 20 January 2026; Section 2.1, equations (2)&ndash;(6), notes 8 and 13</span></div>
+                        <div class="impl"><a href="https://proceedings.neurips.cc/paper/7181-attention-is-all-you-need" target="_blank"><span class="impl-name">Attention Is All You Need</span></a> <span class="impl-info">Vaswani et al. &mdash; NeurIPS 2017</span></div>
                     </div>
                 </div>
             </div>
